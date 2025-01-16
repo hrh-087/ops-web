@@ -1,0 +1,253 @@
+<template>
+  <div>
+    <div>
+      <el-button
+        type="primary"
+        icon="plus"
+        @click="addProject()"
+      >新增项目</el-button>
+    </div>
+    <el-table
+      :data="tableData"
+      row-key="ID"
+      style="width: 100%;margin-top:15px;"
+    >
+        <el-table-column 
+          prop="ID" 
+          label="ID" 
+          min-width="100" />
+      
+        <el-table-column
+          align="left"
+          label="项目名称"
+          min-width="120"
+          prop="projectName"
+        />
+        <!-- <el-table-column
+          align="left"
+          label="创建时间"
+          min-width="120"
+          prop="create_at"
+        /> -->
+
+        <el-table-column
+          align="left"
+          fixed="right"
+          label="操作"
+          width="300"
+        >
+          <template #default="scope">
+            <el-button
+              type="primary"
+              link
+              icon="edit"
+              @click="editProject(scope.row)"
+            >编辑</el-button>
+            <el-button
+              type="primary"
+              link
+              icon="delete"
+              @click="deleteProject(scope.row)"
+            >删除</el-button>
+          </template>
+        </el-table-column>
+    </el-table>
+
+    <div class="ops-pagination">
+    <el-pagination
+      :current-page="page"
+      :page-size="pageSize"
+      :page-sizes="[10, 30, 50, 100]"
+      :total="total"
+      layout="total, sizes, prev, pager, next, jumper"
+      @current-change="handleCurrentChange"
+      @size-change="handleSizeChange"
+    />
+
+    <el-drawer
+      v-model="dialogFormVisible"
+      size="50%"
+      :before-close="closeDialog"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="text-lg">{{ dialogTitle }}</span>
+          <div>
+            <el-button @click="closeDialog">
+              取 消
+            </el-button>
+            <el-button
+              type="primary"
+              @click="enterDialog"
+            >
+              确 定
+            </el-button>
+          </div>
+        </div>
+      </template>
+      <el-form
+        ref="projectForm"
+        :model="form"
+        :rules="rules"
+        label-width="80px"
+      >
+        <el-form-item
+          label="项目名称"
+          prop="projectName"
+        >
+          <el-input
+            v-model="form.projectName"
+            autocomplete="off"
+          />
+        </el-form-item>
+      </el-form>
+    </el-drawer>
+    </div>
+
+  </div>
+</template>
+
+<script setup lang="ts">
+
+import ProjectApi from '@/api/system/project';
+
+defineOptions({ name: 'project' })
+
+const tableData = ref([])
+const page = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+const searchInfo = ref({})
+
+const rules = ref({
+  projectName: [{ required: true, message: '请输入项目名称', trigger: 'blur' }]
+})
+
+
+const getTableData = () => {
+  ProjectApi.getProjectList({page: page.value, pageSize:pageSize.value}).then(res => {
+    tableData.value = res.data.rows
+    total.value = res.data.total
+    page.value = res.data.page
+    pageSize.value = res.data.pageSize
+  })
+}
+
+getTableData()
+
+const projectForm = ref()
+const form = ref({
+  projectName:  '',
+})
+const initForm = () => {
+  if (projectForm.value){
+    projectForm.value.resetFields()
+  }
+  form.value = {
+    projectName:  '',
+  }
+}
+
+const dialogTitle = ref('')
+const type = ref('')
+const dialogFormVisible = ref(false)
+
+const openDialog = (key: string) => {
+  switch (key) {
+    case 'addProject':
+      dialogTitle.value = "新增项目"
+      break
+    case 'editProject':
+       dialogTitle.value = "编辑项目"
+      break
+    default:
+      break
+  }
+  type.value = key
+  dialogFormVisible.value = true
+}
+
+const closeDialog = () => {
+  initForm()
+  dialogFormVisible.value = false
+}
+
+
+const editProject = (row: any) => {
+  ProjectApi.getProjectById({id:row.ID}).then((res:any)=>{
+    form.value = res.data
+    openDialog('editProject')
+  })
+}
+
+const deleteProject = (row: any) => {
+  ElMessageBox.confirm('确定要删除吗?', '提示', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  }).then(async() => {
+    ProjectApi.deleteProject({id:row.ID}).then((res:any)=>{
+      ElMessage({
+        type: 'success',
+        message: "删除成功!",
+      })
+      getTableData()
+    })
+  })
+}
+
+const addProject = () => {
+  openDialog("addProject")
+}
+
+// 分页
+const handleSizeChange = (val:number) => {
+  pageSize.value = val
+  getTableData()
+}
+
+const handleCurrentChange = (val:number) => {
+  page.value = val
+  getTableData()
+}
+
+const enterDialog = () => {
+  // 提交表单
+  projectForm.value?.validate((valid: boolean) => {
+    if (valid){
+      switch(type.value){
+        case 'addProject':
+          {
+            ProjectApi.createProject(form.value).then(
+              (res:any) => {
+                ElMessage({
+                  type: 'success',
+                  message: '添加成功!'
+                })
+                getTableData()
+                closeDialog()
+              }
+            )
+            break
+          }
+        case 'editProject':
+          {
+            ProjectApi.updateProject(form.value).then(
+              (res:any) => {
+                ElMessage({
+                  type: 'success',
+                  message: '修改成功!'
+                })
+                getTableData()
+                closeDialog()
+              }
+            )
+            break
+          }
+      }
+    }
+  })
+}
+
+</script>
