@@ -24,7 +24,7 @@ deployDev:
   tags:
     - dc-ch
   script:
-    - echo "start build stable"
+    - echo "start build dev"
     - bash script/build_image.sh dev
     - bash script/push_image.sh dev
-    - echo "finish build stable"
+    - echo "finish build dev"
