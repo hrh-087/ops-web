@@ -6,7 +6,7 @@ COPY . .
 RUN npm install -g pnpm
 RUN pnpm install && pnpm run build
 
-FROM nginx:alpine
+FROM nginx:1.20.1
 
 COPY docker-compose/nginx/my.conf /etc/nginx/conf.d/ops_web.conf
 COPY --from=0 /ops_web/dist /usr/share/nginx/html
