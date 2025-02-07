@@ -4,7 +4,7 @@ import { APIResponse, ResponseList } from "../types/common";
 class PlatformApi {
   static getPlatformList(data: any) {
     return request<any, APIResponse<ResponseList>>({
-      url: "/platform/gamePlatform",
+      url: "/platform/gamePlatform/",
       method: "get",
       params: data,
     });
@@ -12,7 +12,7 @@ class PlatformApi {
 
   static createPlatform(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/platform/gamePlatform",
+      url: "/platform/gamePlatform/",
       method: "post",
       data,
     });
@@ -20,7 +20,7 @@ class PlatformApi {
 
   static updatePlatform(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/platform/gamePlatform",
+      url: "/platform/gamePlatform/",
       method: "put",
       data,
     });
@@ -28,7 +28,7 @@ class PlatformApi {
 
   static deletePlatform(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/platform/gamePlatform",
+      url: "/platform/gamePlatform/",
       method: "delete",
       data,
     });
@@ -43,7 +43,7 @@ class PlatformApi {
 
   static getPlatformAll() {
     return request<any, APIResponse<object>>({
-      url: "/platform/gamePlatform/all",
+      url: "/platform/gamePlatform/all/",
       method: "get",
     });
   }

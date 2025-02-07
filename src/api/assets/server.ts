@@ -1,35 +1,35 @@
-import request from '@/utils/request';
+import request from "@/utils/request";
 import { type APIResponse, ResponseList } from "../types/common";
 
-class AssetsServerApi{
+class AssetsServerApi {
   static getAssetsServerList(data: any) {
     return request<any, APIResponse<ResponseList>>({
-      url: '/assets/server',
-      method: 'get',
+      url: "/assets/server/",
+      method: "get",
       params: data,
     });
   }
 
   static createAssetsServer(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/server',
-      method: 'post',
+      url: "/assets/server/",
+      method: "post",
       data,
     });
   }
 
   static updateAssetsServer(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/server',
-      method: 'put',
+      url: "/assets/server/",
+      method: "put",
       data,
     });
   }
 
   static deleteAssetsServer(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/server',
-      method: 'delete',
+      url: "/assets/server/",
+      method: "delete",
       data,
     });
   }
@@ -37,15 +37,15 @@ class AssetsServerApi{
   static getAssetsServerById(id: any) {
     return request<any, APIResponse<object>>({
       url: `/assets/server/${id}/`,
-      method: 'get',
+      method: "get",
     });
   }
 
   static getAssetsServerall(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/assets/server/all",
-      method: 'get',
-      params: data
+      url: "/assets/server/all/",
+      method: "get",
+      params: data,
     });
   }
 }

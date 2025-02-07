@@ -198,7 +198,7 @@ watch(filterText, (val) => {
 <style lang="scss" scoped>
 .custom-tree-node {
   span + span {
-    @apply ml-3;
+    margin-left: 0.75rem;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 import request from "@/utils/request";
 import { type APIResponse } from "../types/common";
-import {type AuthorityInfo} from "./role"
+import { type AuthorityInfo } from "./role";
 
 class UserAPI {
   /**
@@ -10,14 +10,14 @@ class UserAPI {
    */
   static getInfo() {
     return request<any, APIResponse<UserInfo>>({
-      url: "/user/getUserinfo",
+      url: "/user/getUserinfo/",
       method: "get",
     });
   }
   /** 注销 接口*/
   static logout() {
     return request({
-      url: "/base/logout",
+      url: "/base/logout/",
       method: "post",
     });
   }
@@ -30,7 +30,7 @@ class UserAPI {
     // formData.append("captchaKey", data.captchaKey);
     // formData.append("captchaCode", data.captchaCode);
     return request<any, APIResponse<LoginResult>>({
-      url: "/base/login",
+      url: "/base/login/",
       method: "post",
       data: data,
       // headers: {
@@ -40,23 +40,22 @@ class UserAPI {
   }
 
   /** 注册 接口*/
-  static register(data:object){
+  static register(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/register",
+      url: "/user/register/",
       method: "post",
-      data
+      data,
     });
   }
 
   /**更新用户信息 */
-  static setUserInfo(data:object){
+  static setUserInfo(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/setUserInfo",
+      url: "/user/setUserInfo/",
       method: "put",
-      data
+      data,
     });
   }
-
 
   /**
    * 获取用户列表
@@ -66,71 +65,71 @@ class UserAPI {
    */
   static getUserList(data: any) {
     return request<any, APIResponse<any>>({
-      url: "/user/getUserList",
+      url: "/user/getUserList/",
       method: "post",
       data,
     });
   }
 
   // 设置一个角色
-  static setUserAuthorities(data:any) {
+  static setUserAuthorities(data: any) {
     return request<any, APIResponse<any>>({
-      url: "/user/setUserAuthorities",
+      url: "/user/setUserAuthorities/",
       method: "post",
-      data
+      data,
     });
   }
 
   // 设置用户权限
   static setUserAuthority(data: object) {
     return request<any, APIResponse<any>>({
-      url: "/user/setUserAuthority",
+      url: "/user/setUserAuthority/",
       method: "post",
-      data
+      data,
     });
   }
 
-  static setUserProject(data: object){
+  static setUserProject(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/setUserProject",
+      url: "/user/setUserProject/",
       method: "post",
-      data
+      data,
     });
   }
 
   // 删除角色
   static deleteUser(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/deleteUser",
+      url: "/user/deleteUser/",
       method: "delete",
-      data
+      data,
     });
   }
 
   // 重置密码
-  static resetPassword(data: object){
+  static resetPassword(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/resetPassword",
+      url: "/user/resetPassword/",
       method: "post",
-      data
+      data,
     });
   }
 
   // 修改密碼
-  static changePassword(data: object){
+  static changePassword(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/changePassword",
+      url: "/user/changePassword/",
       method: "post",
-      data
+      data,
     });
   }
 
   // 修改用戶自身信息
-  static setSelfInfo(data: object){
+  static setSelfInfo(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/user/setSelfInfo",
+      url: "/user/setSelfInfo/",
       method: "put",
-      data
+      data,
     });
   }
 }
@@ -155,13 +154,13 @@ export interface UserInfo {
   authority: AuthorityInfo;
 
   /** 角色列表 */
-  authorities: AuthorityInfo[]; 
+  authorities: AuthorityInfo[];
 
-  phone: string
+  phone: string;
 
-  email: string
+  email: string;
 
-  projectId: number
+  projectId: number;
 
   /** 权限 */
   // perms: string[];

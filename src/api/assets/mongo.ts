@@ -1,35 +1,35 @@
-import request from '@/utils/request';
+import request from "@/utils/request";
 import { type APIResponse, ResponseList } from "../types/common";
 
-class AssetsMongoApi{  
+class AssetsMongoApi {
   static getAssetsMongoList(data: any) {
     return request<any, APIResponse<ResponseList>>({
-      url: '/assets/mongo',
-      method: 'get',
+      url: "/assets/mongo/",
+      method: "get",
       params: data,
     });
   }
 
   static createAssetsMongo(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/mongo',
-      method: 'post',
+      url: "/assets/mongo/",
+      method: "post",
       data,
     });
   }
 
   static updateAssetsMongo(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/mongo',
-      method: 'put',
+      url: "/assets/mongo/",
+      method: "put",
       data,
     });
   }
 
   static deleteAssetsMongo(data: any) {
     return request<any, APIResponse<object>>({
-      url: '/assets/mongo',
-      method: 'delete',
+      url: "/assets/mongo/",
+      method: "delete",
       data,
     });
   }
@@ -37,15 +37,15 @@ class AssetsMongoApi{
   static getAssetsMongoById(id: any) {
     return request<any, APIResponse<object>>({
       url: `/assets/mongo/${id}/`,
-      method: 'get',
+      method: "get",
     });
   }
 
   static getAssetsMongoall(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/assets/mongo/all",
-      method: 'get',
-      params: data
+      url: "/assets/mongo/all/",
+      method: "get",
+      params: data,
     });
   }
 }

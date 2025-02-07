@@ -4,7 +4,7 @@ import { APIResponse, ResponseList } from "../types/common";
 class CloudProduceApi {
   static getCloudProduceList(data: any) {
     return request<any, APIResponse<ResponseList>>({
-      url: "/cloud/cloudProduce",
+      url: "/cloud/cloudProduce/",
       method: "get",
       params: data,
     });
@@ -19,7 +19,7 @@ class CloudProduceApi {
 
   static createCloudProduce(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/cloud/cloudProduce",
+      url: "/cloud/cloudProduce/",
       method: "post",
       data,
     });
@@ -27,7 +27,7 @@ class CloudProduceApi {
 
   static updateCloudProduce(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/cloud/cloudProduce",
+      url: "/cloud/cloudProduce/",
       method: "put",
       data,
     });
@@ -35,7 +35,7 @@ class CloudProduceApi {
 
   static deleteCloudProduce(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/cloud/cloudProduce",
+      url: "/cloud/cloudProduce/",
       method: "delete",
       data,
     });
