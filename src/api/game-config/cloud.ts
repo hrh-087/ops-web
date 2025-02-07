@@ -1,8 +1,7 @@
-import request from '@/utils/request';
-import { APIResponse, ResponseList } from '../types/common';
+import request from "@/utils/request";
+import { APIResponse, ResponseList } from "../types/common";
 
 class CloudProduceApi {
-
   static getCloudProduceList(data: any) {
     return request<any, APIResponse<ResponseList>>({
       url: "/cloud/cloudProduce",
@@ -14,7 +13,7 @@ class CloudProduceApi {
   static getCloudProduceById(id: any) {
     return request<any, APIResponse<object>>({
       url: `/cloud/cloudProduce/${id}/`,
-      method: "get"
+      method: "get",
     });
   }
 
@@ -51,3 +50,18 @@ class CloudProduceApi {
 }
 
 export default CloudProduceApi;
+
+export interface CloudProduce {
+  cloudName: string;
+  CreatedAt: string;
+  ID: number;
+  isActive: boolean;
+  isCloud: boolean;
+  projectId: number;
+  regionId: string;
+  regionName: string;
+  secretId: string;
+  secretKey: string;
+  UpdatedAt: string;
+  [property: string]: any;
+}

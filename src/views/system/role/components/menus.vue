@@ -1,16 +1,10 @@
 <template>
   <div>
     <div class="sticky top-0.5 z-10">
-      <el-input
-        v-model="filterText"
-        class="w-3/5"
-        placeholder="筛选"
-      />
-      <el-button
-        class="float-right"
-        type="primary"
-        @click="relation"
-      >确 定</el-button>
+      <el-input v-model="filterText" class="w-3/5" placeholder="筛选" />
+      <el-button class="float-right" type="primary" @click="relation">
+        确 定
+      </el-button>
     </div>
     <div class="tree-content">
       <el-scrollbar>
@@ -19,14 +13,13 @@
           :data="menuTreeData"
           :default-checked-keys="menuTreeIds"
           :props="menuDefaultProps"
-          default-expand-all
           highlight-current
           node-key="ID"
           show-checkbox
           :filter-node-method="filterNode"
           @check="nodeChange"
         >
-          <template #default="{ node , data }">
+          <template #default="{ node }">
             <span class="custom-tree-node">
               <span>{{ node.label }}</span>
               <!-- <span>
@@ -93,71 +86,72 @@
 </template>
 
 <script setup lang="ts">
-import MenuAPI from '@/api/system/menu'
+import MenuAPI from "@/api/system/menu";
 
 defineOptions({
-  name: 'Menus'
-})
+  name: "Menus",
+});
 
 const props = defineProps({
   row: {
-    default: function() {
-      return {}
+    default: function () {
+      return {};
     },
-    type: Object
-  }
-})
+    type: Object,
+  },
+});
 
-const emit = defineEmits(['changeRow', "closeDrawer"])
-const filterText = ref('')
-const menuTreeData = ref()
-const menuTreeIds = ref([])
-const needConfirm = ref(false)
+const emit = defineEmits(["changeRow", "closeDrawer"]);
+const filterText = ref("");
+const menuTreeData = ref();
+const menuTreeIds = ref([]);
+const needConfirm = ref(false);
 const menuDefaultProps = ref({
-  children: 'children',
-  label: function(data: any) {
-    return data.meta.title
-  }
-})
+  children: "children",
+  label: function (data: any) {
+    return data.meta.title;
+  },
+});
 
-const init = async() => {
+const init = async () => {
   // 获取所有菜单树
-  await MenuAPI.getBaseMenuTree().then((res) => {
-    menuTreeData.value = res.data
-  }).catch(() => {
-    ElMessage({
-      type: 'error',
-      message: '基础菜单加载失败',
+  await MenuAPI.getBaseMenuTree()
+    .then((res) => {
+      menuTreeData.value = res.data;
     })
-  })
-  
-  
-  await MenuAPI.getMenuAuthority({ authorityId: props.row.authorityId }).then(
-    (res) => {
-      const menus = res.data.menus
-      const arr:never[] = []
-      if (menus) {
-        menus.forEach((item:any) => {
-        // 防止直接选中父级造成全选
-        if (!menus.some((same:any) => same.parentId === item.menuId)) {
-            arr.push(Number(item.menuId) as never)
-          }
-        })
-      }
-      
-      menuTreeIds.value = arr
-    }
-  ).catch((err)=>{
-    console.log(err)
-    ElMessage({
-      type: 'error',
-      message: '角色菜单加载失败',
-    })
-    emit('closeDrawer')
-  })
-}
+    .catch(() => {
+      ElMessage({
+        type: "error",
+        message: "基础菜单加载失败",
+      });
+    });
 
-init()
+  await MenuAPI.getMenuAuthority({ authorityId: props.row.authorityId })
+    .then((res) => {
+      const menus = res.data.menus;
+      const arr: never[] = [];
+      if (menus) {
+        menus.forEach((item: any) => {
+          // 防止直接选中父级造成全选
+          if (!menus.some((same: any) => same.parentId === item.menuId)) {
+            arr.push(Number(item.menuId) as never);
+          }
+        });
+      }
+
+      menuTreeIds.value = arr;
+    })
+    .catch((err) => {
+      console.log(err);
+      ElMessage({
+        type: "error",
+        message: "角色菜单加载失败",
+      });
+      emit("closeDrawer");
+    });
+};
+
+init();
 
 // const setDefault = async(data) => {
 //   const res = await updateAuthority({ authorityId: props.row.authorityId, AuthorityName: props.row.authorityName, parentId: props.row.parentId, defaultRouter: data.name })
@@ -167,46 +161,43 @@ init()
 //   }
 // }
 const nodeChange = () => {
-  needConfirm.value = true
-}
+  needConfirm.value = true;
+};
 // 暴露给外层使用的切换拦截统一方法
 const enterAndNext = () => {
-  relation()
-}
-defineExpose({ enterAndNext, needConfirm })
+  relation();
+};
+defineExpose({ enterAndNext, needConfirm });
 // 关联树 确认方法
-const menuTree = ref()
-const relation = async() => {
-  const checkArr = menuTree.value.getCheckedNodes(false, true)
+const menuTree = ref();
+const relation = async () => {
+  const checkArr = menuTree.value.getCheckedNodes(false, true);
   const res = await MenuAPI.addMenuAuthority({
     menus: checkArr,
-    authorityId: props.row.authorityId
-  })
+    authorityId: props.row.authorityId,
+  });
   if (res.code === 0) {
     ElMessage({
-      type: 'success',
-      message: '菜单设置成功!'
-    })
+      type: "success",
+      message: "菜单设置成功!",
+    });
   }
-}
+};
 
-
-
-const filterNode = (value:any, data:any) => {
-  if (!value) return true
+const filterNode = (value: any, data: any) => {
+  if (!value) return true;
   // console.log(data.mate.title)
-  return data.meta.title.indexOf(value) !== -1
-}
+  return data.meta.title.indexOf(value) !== -1;
+};
 
 watch(filterText, (val) => {
-  menuTree.value.filter(val)
-})
-
+  menuTree.value.filter(val);
+});
 </script>
 
 <style lang="scss" scoped>
-.custom-tree-node{
-  span+span{
+.custom-tree-node {
+  span + span {
     @apply ml-3;
   }
 }
