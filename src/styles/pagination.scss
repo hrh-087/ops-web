@@ -1,5 +1,33 @@
-
-.ops-pagination{
+// pagination.scss
+.ops-pagination {
   display: flex;
   justify-content: flex-end;
+  margin-top: 1rem;
+
+  .el-pagination__editor {
+    .el-input__inner {
+      height: 2rem; // 使用标准单位
+    }
+  }
+
+  .is-active {
+    color: #fff !important;
+    background-color: var(--el-color-primary);
+    border-radius: 0.25rem;
+  }
 }
+
+// .ops-pagination {
+//   @apply flex justify-end;
+//   .el-pagination__editor {
+//       .el-input__inner {
+//           @apply h-8;
+//       }
+//   }
+
+//   .is-active {
+//       @apply rounded text-white;
+//       background: var(--el-color-primary);
+//       color: #ffffff !important;
+//   }
+// }
