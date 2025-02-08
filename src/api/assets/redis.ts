@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import { type APIResponse, ResponseList } from "../types/common";
+import { type APIResponse, ResponseList, DeviceInfo } from "../types/common";
+import { Platform } from "../game-config/platform";
 
 class AssetsRedisApi {
   static getAssetsRedisList(data: any) {
@@ -51,3 +52,19 @@ class AssetsRedisApi {
 }
 
 export default AssetsRedisApi;
+
+export interface AssetsRedis {
+  CreatedAt: string;
+  deviceInfo: DeviceInfo;
+  host: string;
+  ID: number;
+  isCluster: boolean;
+  name: string;
+  password: string;
+  platform: Platform;
+  platformId: number;
+  port: number;
+  projectId: number;
+  UpdatedAt: string;
+  [property: string]: any;
+}

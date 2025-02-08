@@ -29,3 +29,22 @@ class RecordAPI {
 }
 
 export default RecordAPI;
+
+export interface OperationRecord {
+  agent: string;
+  body: string;
+  CreatedAt: string;
+  error_message: string;
+  ID: number;
+  ip: string;
+  latency: number;
+  method: string;
+  path: string;
+  resp: string;
+  status: number;
+  UpdatedAt: string;
+  user: User;
+  user_id: number;
+  "01JKFWENQXKZG19NNNFKWBWAX4": any;
+  [property: string]: any;
+}

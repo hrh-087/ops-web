@@ -67,6 +67,12 @@
         prop="port"
       />
 
+      <el-table-column align="left" label="是否为集群" min-width="120">
+        <template #default="scope">
+          <el-switch v-model="scope.row.isCluster" disabled />
+        </template>
+      </el-table-column>
+
       <el-table-column align="left" label="系统信息" min-width="120">
         <template #default>
           <el-tooltip
@@ -197,6 +203,10 @@
               filterable
             />
           </el-form-item>
+
+          <el-form-item label="是否为集群" prop="isCluster" style="width: 70%">
+            <el-switch v-model="form.isCluster" />
+          </el-form-item>
         </el-form>
       </el-drawer>
     </div>
@@ -204,8 +214,8 @@
 </template>
 
 <script setup lang="ts">
-import AssetsRedisApi from "@/api/assets/redis";
-import PlatformApi from "@/api/game-config/platform";
+import AssetsRedisApi, { AssetsRedis } from "@/api/assets/redis";
+import PlatformApi, { type Platform } from "@/api/game-config/platform";
 
 defineOptions({ name: "Redis" });
 
@@ -217,7 +227,7 @@ const searchInfo = ref({
   name: "",
   platformId: "",
 });
-const platformData = ref([]);
+const platformData = ref<Platform[]>();
 
 const rules = {
   name: [{ required: true, message: "请输入名称", trigger: "blur" }],
@@ -252,7 +262,7 @@ const onSubmit = () => {
   getTableData();
 };
 
-const form = ref({
+const form = ref<AssetsRedis | any>({
   name: "",
   host: "",
   port: 0,
