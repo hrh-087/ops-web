@@ -116,13 +116,13 @@
 
 <script setup lang="ts">
 // 外部库和依赖
-import { LocationQuery, useRoute,  RouteRecordRaw} from "vue-router";
+import { LocationQuery, useRoute, RouteRecordRaw } from "vue-router";
 
 // 内部依赖
 import { useSettingsStore, useUserStore } from "@/store";
 // import AuthAPI, { type LoginData } from "@/api/auth";
-import UserAPI, {type LoginData} from "@/api/system/user";
-import {usePermissionStore, useProjectStore} from "@/store";
+import UserAPI, { type LoginData } from "@/api/system/user";
+import { usePermissionStore, useProjectStore } from "@/store";
 import router from "@/router";
 import defaultSettings from "@/settings";
 import { ThemeEnum } from "@/enums/ThemeEnum";
@@ -158,8 +158,8 @@ const captchaBase64 = ref();
 const loginFormRef = ref<FormInstance>();
 
 const loginData = ref<LoginData>({
-  username: "admin",
-  password: "123456",
+  username: "",
+  password: "",
   // captchaKey: "",
   // captchaCode: "",
 });
@@ -212,18 +212,18 @@ function handleLoginSubmit() {
         .login(loginData.value)
         .then(async () => {
           // 加载项目
-          projectStore.getProject()
+          projectStore.getProject();
           // 加載路由
           const dynamicRoutes = await permissionStore.generateRoutes();
-            dynamicRoutes.forEach((route: RouteRecordRaw) =>
-              router.addRoute(route)
+          dynamicRoutes.forEach((route: RouteRecordRaw) =>
+            router.addRoute(route)
           );
           const { path, queryParams } = parseRedirect();
           router.push({ path: path, query: queryParams });
         })
         .catch(() => {
           // getCaptcha();
-          return
+          return;
         })
         .finally(() => {
           loading.value = false;

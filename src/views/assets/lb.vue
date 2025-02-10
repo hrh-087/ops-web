@@ -118,8 +118,8 @@
 
 <script setup lang="ts">
 import LbApi from "@/api/assets/lb";
-import PlatformApi from "@/api/game-config/platform";
-import CloudProduceApi from "@/api/game-config/cloud";
+import PlatformApi, { type Platform } from "@/api/game-config/platform";
+import CloudProduceApi, { type CloudProduce } from "@/api/game-config/cloud";
 
 defineOptions({ name: "Lb" });
 
@@ -131,8 +131,8 @@ const pageSize = ref(10);
 const total = ref(0);
 const searchInfo = ref({});
 
-const platformOptions = ref([]);
-const cloudProduceOptions = ref([]);
+const platformOptions = ref<Platform[] | any>([]);
+const cloudProduceOptions = ref<CloudProduce[]>([]);
 
 const rules = {
   platformId: [

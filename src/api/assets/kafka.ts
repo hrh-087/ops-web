@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import { type APIResponse, ResponseList } from "../types/common";
+import { type APIResponse, ResponseList, DeviceInfo } from "../types/common";
+import { Platform } from "../game-config/platform";
 
 class AssetsKafkaApi {
   static getAssetsKafkaList(data: any) {
@@ -51,3 +52,18 @@ class AssetsKafkaApi {
 }
 
 export default AssetsKafkaApi;
+
+export interface AssetsKafka {
+  CreatedAt: string;
+  deviceInfo: DeviceInfo;
+  host: string;
+  ID: number;
+  name: string;
+  pass: string;
+  platform: Platform;
+  platformId: number;
+  projectId: number;
+  UpdatedAt: string;
+  user: string;
+  [property: string]: any;
+}

@@ -188,20 +188,18 @@
             style="width: 70%"
             required
           >
-            <el-cascader
-              v-model="form.platformId"
+            <el-select
+              v-model.number="form.platformId"
+              placeholder="请选择"
               style="width: 100%"
-              :options="platformData"
-              :props="{
-                checkStrictly: true,
-                label: 'platformName',
-                value: 'ID',
-                disabled: 'disabled',
-                emitPath: false,
-              }"
-              :show-all-levels="false"
-              filterable
-            />
+            >
+              <el-option
+                v-for="item in platformData"
+                :key="item.ID"
+                :label="item.platformName"
+                :value="item.ID"
+              />
+            </el-select>
           </el-form-item>
 
           <el-form-item label="是否为集群" prop="isCluster" style="width: 70%">

@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import { type APIResponse, ResponseList } from "../types/common";
+import { type APIResponse, ResponseList, DeviceInfo } from "../types/common";
+import { Platform } from "../game-config/platform";
 
 class AssetsMongoApi {
   static getAssetsMongoList(data: any) {
@@ -51,3 +52,17 @@ class AssetsMongoApi {
 }
 
 export default AssetsMongoApi;
+
+export interface AssetsMongo {
+  auth: string;
+  CreatedAt: string;
+  deviceInfo: DeviceInfo;
+  host: string;
+  ID: number;
+  name: string;
+  platform: Platform;
+  platformId: number;
+  projectId: number;
+  UpdatedAt: string;
+  [property: string]: any;
+}

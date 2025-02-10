@@ -1,5 +1,7 @@
 import request from "@/utils/request";
-import { type APIResponse, ResponseList } from "../types/common";
+import { type APIResponse, ResponseList, DeviceInfo } from "../types/common";
+import { type CloudProduce } from "../game-config/cloud";
+import { type Platform } from "../game-config/platform";
 
 class AssetsServerApi {
   static getAssetsServerList(data: any) {
@@ -51,3 +53,26 @@ class AssetsServerApi {
 }
 
 export default AssetsServerApi;
+
+export interface AssetsServer {
+  cloudProduce: CloudProduce;
+  cloudProduceId: number;
+  CreatedAt: string;
+  deviceInfo: DeviceInfo;
+  ID: number;
+  instanceId: string;
+  instanceStates: number;
+  platform: Platform;
+  platformId: number;
+  ports: string[];
+  privateIp: string;
+  projectId: number;
+  pubIp: string;
+  serverName: string;
+  serverType: number;
+  sshPort: string;
+  status: number;
+  UpdatedAt: string;
+  uuid: string;
+  [property: string]: any;
+}

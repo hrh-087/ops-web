@@ -1,5 +1,6 @@
 import request from "@/utils/request";
-import { type APIResponse, ResponseList } from "../types/common";
+import { type APIResponse, ResponseList, DeviceInfo } from "../types/common";
+import { type Platform } from "../game-config/platform";
 
 class AssetsMysqlApi {
   static getAssetsMysqlList(data: any) {
@@ -51,3 +52,19 @@ class AssetsMysqlApi {
 }
 
 export default AssetsMysqlApi;
+
+export interface AssetsMysql {
+  CreatedAt: string;
+  deviceInfo: DeviceInfo;
+  host: string;
+  ID: number;
+  name: string;
+  pass: string;
+  platform: Platform;
+  platformId: number;
+  port: number;
+  projectId: number;
+  UpdatedAt: string;
+  user: string;
+  [property: string]: any;
+}
