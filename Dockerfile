@@ -1,4 +1,4 @@
-FROM node:20.16
+FROM node:20.16.0-alpine
   
 WORKDIR /ops_web
 COPY . .
