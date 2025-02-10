@@ -4,7 +4,7 @@
     <component :is="icon.replace('el-icon-', '')" />
   </el-icon>
   <svg-icon v-else-if="icon" :icon-class="icon" />
-  <svg-icon v-else icon-class="menu" />
+  <!-- <svg-icon v-else icon-class="menu" /> -->
   <!-- 菜单标题 -->
   <span v-if="title" class="ml-1">{{ translateRouteTitle(title) }}</span>
 </template>
