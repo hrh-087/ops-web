@@ -49,3 +49,20 @@ class GameTypeApi {
 }
 
 export default GameTypeApi;
+
+export interface GameType {
+  code: string;
+  composeTemplate: string;
+  configTemplate: string;
+  CreatedAt: string;
+  grpcPort: string;
+  httpPort: string;
+  ID: number;
+  isFight: boolean;
+  name: string;
+  projectId: number;
+  tcpPort: string;
+  UpdatedAt: string;
+  vmidRule: number;
+  [property: string]: any;
+}
