@@ -348,6 +348,7 @@ import GameTypeApi, { type GameType } from "@/api/game/gameType";
 import GameServerApi, { type GameServer } from "@/api/game/gameServer";
 import { platform } from "os";
 import { status } from "nprogress";
+import { el } from "element-plus/es/locale";
 
 defineOptions({
   name: "GameServer",
@@ -600,11 +601,13 @@ const updateGameConfig = () => {
     cancelButtonText: "取消",
     type: "warning",
   }).then(() => {
-    GameServerApi.updateGameConfig({ updateType: 1, ids: [] }).then(
-      (res: any) => {
-        router.push({ name: "task", params: { jobId: res.data.jobId } });
-      }
-    );
+    GameServerApi.updateGameConfig({ updateType: 1, ids: [] }).then(() => {
+      getTableData();
+      ElMessage({
+        type: "success",
+        message: "更新成功",
+      });
+    });
   });
 };
 
