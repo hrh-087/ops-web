@@ -215,7 +215,7 @@ const deleteTaskFunc = (row: TaskManage) => {
 };
 
 const execTaskFunc = (row: TaskManage) => {
-  ElMessageBox.confirm("确定要执行吗?", "提示", {
+  ElMessageBox.confirm(`确定要执行 ${row.name} 吗?`, "提示", {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",

@@ -63,8 +63,10 @@
         :data="tableData"
         row-key="ID"
         style="width: 100%; margin-top: 15px"
+        @selection-change="handleSelectionChange"
       >
-        <el-table-column prop="ID" label="ID" min-width="100" />
+        <!-- <el-table-column prop="ID" label="ID" min-width="100" /> -->
+        <el-table-column type="selection" width="55" />
 
         <el-table-column
           align="left"
@@ -159,15 +161,32 @@
       </el-table>
 
       <div class="ops-pagination">
-        <el-pagination
-          :current-page="page"
-          :page-size="pageSize"
-          :page-sizes="[10, 30, 50, 100]"
-          :total="total"
-          layout="total, sizes, prev, pager, next, jumper"
-          @current-change="handleCurrentChange"
-          @size-change="handleSizeChange"
-        />
+        <div>
+          <el-select
+            v-model="taskNum"
+            style="width: 249px; padding-right: 20px"
+          >
+            <el-option
+              v-for="item in taskType"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+          <el-button type="danger" @click="execTask">执行</el-button>
+        </div>
+
+        <div>
+          <el-pagination
+            :current-page="page"
+            :page-size="pageSize"
+            :page-sizes="[10, 30, 50, 100]"
+            :total="total"
+            layout="total, sizes, prev, pager, next, jumper"
+            @current-change="handleCurrentChange"
+            @size-change="handleSizeChange"
+          />
+        </div>
       </div>
     </div>
     <el-drawer
@@ -346,9 +365,6 @@ import AssetsMongoApi, { type AssetsMongo } from "@/api/assets/mongo";
 import AssetsRedisApi, { type AssetsRedis } from "@/api/assets/redis";
 import GameTypeApi, { type GameType } from "@/api/game/gameType";
 import GameServerApi, { type GameServer } from "@/api/game/gameServer";
-import { platform } from "os";
-import { status } from "nprogress";
-import { el } from "element-plus/es/locale";
 
 defineOptions({
   name: "GameServer",
@@ -374,14 +390,6 @@ const kafkaData = ref<AssetsKafka[] | any>();
 const mongoData = ref<AssetsMongo[] | any>();
 const redisData = ref<AssetsRedis[] | any>();
 
-const gameStaus = ref<Record<number, string>>({
-  0: "待安装",
-  1: "安装中",
-  2: "已安装",
-  3: "已删除",
-  4: "安装失败",
-});
-
 const rules = {
   name: [{ required: true, message: "请输入名称", trigger: "blur" }],
   gameTypeId: [{ required: true, message: "请选择游戏类型", trigger: "blur" }],
@@ -391,6 +399,14 @@ const rules = {
   hostId: [{ required: true, message: "请选择游戏服务器", trigger: "blur" }],
   platformId: [{ required: true, message: "请选择游戏渠道", trigger: "blur" }],
 };
+
+const gameStaus = ref<Record<number, string>>({
+  0: "待安装",
+  1: "安装中",
+  2: "已安装",
+  3: "已删除",
+  4: "安装失败",
+});
 
 const getTableData = () => {
   GameServerApi.getGameServerList({
@@ -407,6 +423,32 @@ const getTableData = () => {
 };
 
 getTableData();
+
+const multipleSelection = ref<GameServer[]>([]);
+const handleSelectionChange = (val: GameServer[]) => {
+  multipleSelection.value = val;
+};
+
+const taskNum = ref(0);
+const taskType = ref([
+  { label: "-------", value: 0 },
+  { label: "开启游戏服", value: 1 },
+  { label: "关闭游戏服", value: 2 },
+]);
+
+const execTask = () => {
+  if (multipleSelection.value.length === 0) {
+    ElMessage.warning("请选择要操作的项");
+    return;
+  }
+
+  if (taskNum.value === 0) {
+    ElMessage.warning("请选择要操作的任务类型");
+    return;
+  }
+
+  let ids: Number[] = multipleSelection.value.map((item) => item.ID);
+};
 
 const gameServerForm = ref();
 const form = ref({
@@ -636,3 +678,23 @@ const handleCurrentChange = (val: number) => {
   getTableData();
 };
 </script>
+
+<style lang="scss" scoped>
+.ops-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* 将子元素分布到两端 */
+
+  .el-pagination__editor {
+    .el-input__inner {
+      height: 2rem; // 使用标准单位
+    }
+  }
+
+  .is-active {
+    color: #fff !important;
+    background-color: var(--el-color-primary);
+    border-radius: 0.25rem;
+  }
+}
+</style>

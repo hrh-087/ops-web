@@ -22,7 +22,7 @@ class GameUpdateApi {
     return request<any, APIResponse<object>>({
       url: "/job/gameUpdate/",
       method: "delete",
-      params: data,
+      data,
     });
   }
 

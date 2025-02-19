@@ -46,14 +46,14 @@
         >
           查看
         </el-button>
-        <el-button
+        <!-- <el-button
           type="primary"
           link
           icon="edit"
           @click="editupdate(scope.row)"
         >
           编辑
-        </el-button>
+        </el-button> -->
         <el-button
           type="primary"
           link
@@ -192,8 +192,8 @@
 
 <script setup lang="ts">
 import GameUpdateApi, { GameUpdateForm } from "@/api/job/game-update";
-import GameServerApi from "@/api/game/gameServer";
-import GameTypeApi from "@/api/game/gameType";
+import GameServerApi, { type GameServer } from "@/api/game/gameServer";
+import GameTypeApi, { type GameType } from "@/api/game/gameType";
 import UploadFileApi from "@/api/base";
 
 import { UploadFile } from "element-plus";
@@ -271,7 +271,7 @@ const serverTypeOptions = [
   },
 ];
 
-const hotUpdateObjList = ref([]);
+const hotUpdateObjList = ref<GameType[] | GameServer[]>([]);
 
 const changeServerType = () => {
   form.value.serverList = [];

@@ -43,6 +43,14 @@
           >
             删除
           </el-button>
+          <el-button
+            type="warning"
+            link
+            icon="Loading"
+            @click="initProject(scope.row)"
+          >
+            初始化
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -194,6 +202,16 @@ const deleteProject = (row: any) => {
       });
       getTableData();
     });
+  });
+};
+
+const initProject = (row: any) => {
+  ElMessageBox.confirm(`确定要初始化${row.projectName}吗?`, "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(async () => {
+    console.log(row);
   });
 };
 
