@@ -17,9 +17,6 @@
             />
           </el-select>
         </el-form-item>
-        <el-form-item label="游戏服名称">
-          <el-input v-model="searchInfo.name" placeholder="搜索条件" />
-        </el-form-item>
         <el-form-item label="游戏服类型">
           <el-select
             v-model="searchInfo.gameTypeId"
@@ -36,7 +33,19 @@
           </el-select>
         </el-form-item>
         <el-form-item label="状态">
-          <el-input v-model="searchInfo.status" placeholder="搜索条件" />
+          <el-select
+            v-model="searchInfo.status"
+            placeholder="请选择状态"
+            style="width: 200px"
+            clearable
+          >
+            <el-option
+              v-for="item in gameStaus"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">
@@ -125,7 +134,9 @@
 
         <el-table-column align="left" label="状态" min-width="120">
           <template #default="scope">
-            {{ gameStaus[scope.row.status] }}
+            {{
+              gameStaus.find((item) => item.value == scope.row.status)?.label
+            }}
           </template>
         </el-table-column>
 
@@ -148,7 +159,7 @@
               删除
             </el-button>
             <el-button
-              v-if="scope.row.status == 0 || scope.row.status == 4"
+              v-if="scope.row.status >= 4"
               type="danger"
               link
               icon="download"
@@ -167,13 +178,15 @@
             style="width: 249px; padding-right: 20px"
           >
             <el-option
-              v-for="item in taskType"
+              v-for="item in taskTypeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
-          <el-button type="danger" @click="execTask">执行</el-button>
+          <el-button type="danger" @click="execTaskDialogVisible = true">
+            执行
+          </el-button>
         </div>
 
         <div>
@@ -354,6 +367,41 @@
         </el-form-item>
       </el-form>
     </el-drawer>
+
+    <el-dialog
+      v-model="execTaskDialogVisible"
+      title="Warning"
+      width="800"
+      align-center
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="text-lg">{{ execName }}</span>
+        </div>
+      </template>
+
+      <template #default>
+        <el-table :data="multipleSelection" style="width: 100%">
+          <el-table-column label="渠道">
+            <template #default="scope">
+              {{ scope.row.platform.platformName }}
+            </template>
+          </el-table-column>
+          <el-table-column label="游戏服">
+            <template #default="scope">
+              {{ scope.row.gameType.code }}_{{ scope.row.vmid }}
+            </template>
+          </el-table-column>
+        </el-table>
+      </template>
+
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="execTaskDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="execTask">确认</el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -365,6 +413,7 @@ import AssetsMongoApi, { type AssetsMongo } from "@/api/assets/mongo";
 import AssetsRedisApi, { type AssetsRedis } from "@/api/assets/redis";
 import GameTypeApi, { type GameType } from "@/api/game/gameType";
 import GameServerApi, { type GameServer } from "@/api/game/gameServer";
+import { it } from "node:test";
 
 defineOptions({
   name: "GameServer",
@@ -377,7 +426,6 @@ const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
 const searchInfo = ref({
-  name: "",
   platformId: "",
   gameTypeId: "",
   status: "",
@@ -400,13 +448,13 @@ const rules = {
   platformId: [{ required: true, message: "请选择游戏渠道", trigger: "blur" }],
 };
 
-const gameStaus = ref<Record<number, string>>({
-  0: "待安装",
-  1: "安装中",
-  2: "已安装",
-  3: "已删除",
-  4: "安装失败",
-});
+const gameStaus = ref([
+  { label: "待安装", value: 5 },
+  { label: "安装中", value: 1 },
+  { label: "已安装", value: 2 },
+  { label: "已删除", value: 3 },
+  { label: "安装失败", value: 4 },
+]);
 
 const getTableData = () => {
   GameServerApi.getGameServerList({
@@ -430,11 +478,13 @@ const handleSelectionChange = (val: GameServer[]) => {
 };
 
 const taskNum = ref(0);
-const taskType = ref([
+const taskTypeOptions = ref([
   { label: "-------", value: 0 },
   { label: "开启游戏服", value: 1 },
   { label: "关闭游戏服", value: 2 },
 ]);
+
+const execTaskDialogVisible = ref(false);
 
 const execTask = () => {
   if (multipleSelection.value.length === 0) {
@@ -448,6 +498,15 @@ const execTask = () => {
   }
 
   let ids: Number[] = multipleSelection.value.map((item) => item.ID);
+
+  GameServerApi.execGameTask({
+    taskType: taskNum.value,
+    gameServerIds: ids,
+  }).then((res: any) => {
+    execTaskDialogVisible.value = false;
+    router.push({ name: "task", params: { jobId: res.data.jobId } });
+    // console.log(res)
+  });
 };
 
 const gameServerForm = ref();
@@ -550,7 +609,6 @@ const closeDialog = () => {
 
 const onReset = () => {
   searchInfo.value = {
-    name: "",
     platformId: "",
     gameTypeId: "",
     status: "",
@@ -677,6 +735,13 @@ const handleCurrentChange = (val: number) => {
   page.value = val;
   getTableData();
 };
+
+// 计算属性
+const execName = computed(() => {
+  return taskTypeOptions.value.find((item: any) => {
+    return item.value === taskNum.value;
+  })?.label;
+});
 </script>
 
 <style lang="scss" scoped>

@@ -74,6 +74,14 @@ class GameServerApi {
       data,
     });
   }
+
+  static execGameTask(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/game/server/execTask/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default GameServerApi;
