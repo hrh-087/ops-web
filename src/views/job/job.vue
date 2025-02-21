@@ -29,7 +29,7 @@
       >
         <template #default="scope">
           <el-tag
-            :type="scope.row.status <= 3 ? 'success' : 'danger'"
+            :type="scope.row.status < 3 ? 'success' : 'danger'"
             disable-transitions
           >
             {{
