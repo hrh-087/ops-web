@@ -71,6 +71,40 @@ class ApiAPI {
       method: "post",
     });
   }
+
+  static ignoreApi = (data: any) => {
+    return request({
+      url: "/api/ignoreApi/",
+      method: "post",
+      data,
+    });
+  };
+
+  static enterSyncApi = (data: any) => {
+    return request({
+      url: "/api/enterSyncApi/",
+      method: "post",
+      data,
+    });
+  };
+
+  static syncApi = () => {
+    return request({
+      url: "/api/syncApi/",
+      method: "get",
+    });
+  };
 }
 
 export default ApiAPI;
+
+export interface Api {
+  apiGroup: string;
+  CreatedAt: string;
+  description: string;
+  ID: number;
+  method: string;
+  path: string;
+  UpdatedAt: string;
+  [property: string]: any;
+}
