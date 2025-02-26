@@ -18,6 +18,9 @@
     </div>
 
     <div class="ops-table-box">
+      <div class="ops-btn-list">
+        <el-button icon="plus" @click="openDialog">新增</el-button>
+      </div>
       <el-table
         :data="tableData"
         row-key="typeKey"
@@ -72,6 +75,57 @@
         </el-table-column>
       </el-table>
     </div>
+
+    <el-drawer
+      v-model="dialogFormVisible"
+      size="50%"
+      :before-close="closeDialog"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="text-lg">{{ dialogTitle }}</span>
+          <div>
+            <el-button @click="closeDialog">取 消</el-button>
+            <el-button type="primary" @click="addSwitchType">确 定</el-button>
+          </div>
+        </div>
+      </template>
+      <el-form
+        ref="switchForm"
+        :model="form"
+        :rules="rules"
+        label-width="120px"
+      >
+        <el-form-item label="渠道" prop="serverId" style="width: 70%" required>
+          <el-select
+            v-model="form.serverId"
+            placeholder="请选择"
+            style="width: 100%"
+          >
+            <el-option
+              v-for="item in platformData"
+              :key="item.platformCode"
+              :label="item.platformName"
+              :value="item.platformCode"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item
+          label="类型key"
+          prop="typeKey"
+          style="width: 70%"
+          required
+        >
+          <el-input v-model.trim="form.typeKey" placeholder="请输入类型key" />
+        </el-form-item>
+
+        <el-form-item label="类型状态" prop="state" style="width: 70%">
+          <el-switch v-model="form.state" />
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 
@@ -82,6 +136,11 @@ import PlatformApi, { type Platform } from "@/api/game-config/platform";
 const tableData = ref<GmSwitch[] | any>([]);
 const serverId = ref<number>();
 const platformData = ref<Platform[] | any>([]);
+
+const rules = {
+  serverId: [{ required: true, message: "请选择渠道", trigger: "blur" }],
+  typeKey: [{ required: true, message: "请输入类型key", trigger: "blur" }],
+};
 
 const getTableData = () => {
   PlatformApi.getPlatformAll().then((res: any) => {
@@ -96,6 +155,49 @@ const getSwitchList = () => {
     serverId: Number(serverId.value),
   }).then((res: any) => {
     tableData.value = res.data;
+  });
+};
+
+const form = ref<GmSwitch | any>({
+  serverId: "",
+  typeKey: "",
+  state: false,
+});
+const switchForm = ref();
+
+const initForm = () => {
+  if (switchForm.value) {
+    switchForm.value.resetFields();
+  }
+  form.value = {
+    serverId: "",
+    typeKey: "",
+    state: false,
+  };
+};
+
+const dialogTitle = ref("新增");
+const dialogFormVisible = ref(false);
+
+const openDialog = () => {
+  dialogFormVisible.value = true;
+};
+
+const closeDialog = () => {
+  initForm();
+  dialogFormVisible.value = false;
+};
+
+const addSwitchType = () => {
+  GmSwitchApi.setSwitch({
+    serverId: Number(form.value.serverId),
+    typeKey: form.value.typeKey,
+    state: form.value.state,
+  }).then(() => {
+    ElMessage({
+      type: "success",
+      message: "添加成功",
+    });
   });
 };
 
