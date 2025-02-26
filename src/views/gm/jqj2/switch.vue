@@ -57,7 +57,7 @@
 
         <el-table-column align="left" label="状态" min-width="120" prop="state">
           <template #default="scope">
-            <el-switch v-model="scope.row.state" />
+            <el-switch v-model="scope.row.state" disabled />
           </template>
         </el-table-column>
 
