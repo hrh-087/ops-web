@@ -47,6 +47,14 @@ class PlatformApi {
       method: "get",
     });
   }
+
+  static kickServer(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/platform/gamePlatform/kick/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default PlatformApi;

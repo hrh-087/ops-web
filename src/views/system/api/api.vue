@@ -565,8 +565,8 @@ const closeSyncDialog = () => {
   syncApiFlag.value = false;
 };
 
-const enterSyncDialog = async () => {
-  ApiAPI.createApi({}).then((res: any) => {
+const enterSyncDialog = () => {
+  ApiAPI.enterSyncApi(syncApiData.value).then((res: any) => {
     ElMessage({
       type: "success",
       message: res.msg,
