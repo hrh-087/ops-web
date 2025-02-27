@@ -46,6 +46,14 @@ class GameTypeApi {
       method: "get",
     });
   }
+
+  static copyGameTypeAll(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/game/type/copyAll/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default GameTypeApi;

@@ -60,10 +60,12 @@ class PlatformApi {
 export default PlatformApi;
 
 export interface Platform {
-  ID: number;
+  ID?: number;
   platformCode: string;
   platformDescribe: string;
   platformName: string;
-  projectId: number;
+  projectId?: number;
+  imageTag: string;
+  imageUri: string;
   [property: string]: any;
 }

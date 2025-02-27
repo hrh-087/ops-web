@@ -1,77 +1,86 @@
 <template>
   <div>
-    <div>
-      <el-button type="primary" icon="plus" @click="addPlatform()">
-        新增渠道
-      </el-button>
-    </div>
-    <el-table
-      :data="tableData"
-      row-key="ID"
-      style="width: 100%; margin-top: 15px"
-    >
-      <el-table-column prop="ID" label="ID" min-width="100" />
+    <div class="ops-table-box">
+      <div class="ops-btn-list">
+        <el-button icon="plus" @click="addPlatform()">新增</el-button>
+      </div>
 
-      <el-table-column
-        align="left"
-        label="渠道名称"
-        min-width="120"
-        prop="platformName"
-      />
+      <el-table
+        :data="tableData"
+        row-key="ID"
+        style="width: 100%; margin-top: 15px"
+      >
+        <el-table-column prop="ID" label="ID" min-width="100" />
 
-      <el-table-column
-        align="left"
-        label="渠道代码"
-        min-width="120"
-        prop="platformCode"
-      />
+        <el-table-column
+          align="left"
+          label="渠道名称"
+          min-width="120"
+          prop="platformName"
+        />
 
-      <el-table-column
-        align="left"
-        label="渠道描述"
-        min-width="120"
-        prop="platformDescribe"
-      />
+        <el-table-column
+          align="left"
+          label="渠道代码"
+          min-width="120"
+          prop="platformCode"
+        />
 
-      <el-table-column align="left" fixed="right" label="操作" width="300">
-        <template #default="scope">
-          <el-button
-            type="primary"
-            link
-            icon="edit"
-            @click="editPlatform(scope.row)"
-          >
-            编辑
-          </el-button>
-          <el-button
-            type="primary"
-            link
-            icon="delete"
-            @click="deletePlatform(scope.row)"
-          >
-            删除
-          </el-button>
-          <el-button
-            type="danger"
-            link
-            icon="rank"
-            @click="kickPlatform(scope.row)"
-          >
-            踢人
-          </el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-    <div class="ops-pagination">
-      <el-pagination
-        :current-page="page"
-        :page-size="pageSize"
-        :page-sizes="[10, 30, 50, 100]"
-        :total="total"
-        layout="total, sizes, prev, pager, next, jumper"
-        @current-change="handleCurrentChange"
-        @size-change="handleSizeChange"
-      />
+        <el-table-column
+          align="left"
+          label="镜像tag"
+          min-width="120"
+          prop="imageTag"
+        />
+
+        <el-table-column
+          align="left"
+          label="渠道描述"
+          min-width="120"
+          prop="platformDescribe"
+        />
+
+        <el-table-column align="left" fixed="right" label="操作" width="300">
+          <template #default="scope">
+            <el-button
+              type="primary"
+              link
+              icon="edit"
+              @click="editPlatform(scope.row)"
+            >
+              编辑
+            </el-button>
+            <el-button
+              type="primary"
+              link
+              icon="delete"
+              @click="deletePlatform(scope.row)"
+            >
+              删除
+            </el-button>
+            <el-button
+              type="danger"
+              link
+              icon="rank"
+              @click="kickPlatform(scope.row)"
+            >
+              踢人
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+
+      <div class="ops-pagination">
+        <el-pagination
+          :current-page="page"
+          :page-size="pageSize"
+          :page-sizes="[10, 30, 50, 100]"
+          :total="total"
+          layout="total, sizes, prev, pager, next, jumper"
+          @current-change="handleCurrentChange"
+          @size-change="handleSizeChange"
+        />
+      </div>
 
       <el-drawer
         v-model="dialogFormVisible"
@@ -121,6 +130,32 @@
           </el-form-item>
 
           <el-form-item
+            label="镜像地址"
+            prop="imageUri"
+            style="width: 70%"
+            required
+          >
+            <el-input
+              v-model="form.imageUri"
+              autocomplete="off"
+              placeholder="swr.cn-south-1.myhuaweicloud.com/dc2gz/"
+            />
+          </el-form-item>
+
+          <el-form-item
+            label="镜像tag"
+            prop="imageTag"
+            style="width: 70%"
+            required
+          >
+            <el-input
+              v-model="form.imageTag"
+              autocomplete="off"
+              placeholder="pt"
+            />
+          </el-form-item>
+
+          <el-form-item
             label="渠道描述"
             prop="platformDescribe"
             style="width: 70%"
@@ -140,14 +175,14 @@
 </template>
 
 <script setup lang="ts">
-import PlatformAPI from "@/api/game-config/platform";
+import PlatformAPI, { type Platform } from "@/api/game-config/platform";
 
 defineOptions({ name: "Platform" });
 
 const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
-const tableData = ref([]);
+const tableData = ref<Platform[]>([]);
 const searchInfo = ref({});
 
 const rules = {
@@ -155,6 +190,10 @@ const rules = {
     { required: true, message: "请输入渠道名称", trigger: "blur" },
   ],
   platformCode: [{ required: true, message: "请输入渠道Id", trigger: "blur" }],
+  imageUri: [
+    { required: true, message: "请输入镜像地址(需要以/结尾)", trigger: "blur" },
+  ],
+  imageTag: [{ required: true, message: "请输入镜像tag", trigger: "blur" }],
 };
 
 const getTableData = () => {
@@ -170,10 +209,12 @@ const getTableData = () => {
 getTableData();
 
 const platformForm = ref();
-const form = ref({
+const form = ref<Platform>({
   platformName: "",
   platformCode: "",
   platformDescribe: "",
+  imageTag: "",
+  imageUri: "",
 });
 
 const initForm = () => {
@@ -184,6 +225,8 @@ const initForm = () => {
     platformName: "",
     platformCode: "",
     platformDescribe: "",
+    imageTag: "",
+    imageUri: "",
   };
 };
 
