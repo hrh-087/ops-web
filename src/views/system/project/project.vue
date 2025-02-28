@@ -18,12 +18,13 @@
         min-width="120"
         prop="projectName"
       />
-      <!-- <el-table-column
-          align="left"
-          label="创建时间"
-          min-width="120"
-          prop="create_at"
-        /> -->
+      <el-table-column align="left" label="项目状态" min-width="120">
+        <template #default="scope">
+          <el-tag :type="scope.row.status === 1 ? 'success' : 'warning'">
+            {{ projectStatus[scope.row.status] || "未知" }}
+          </el-tag>
+        </template>
+      </el-table-column>
 
       <el-table-column align="left" fixed="right" label="操作" width="300">
         <template #default="scope">
@@ -44,6 +45,7 @@
             删除
           </el-button>
           <el-button
+            v-if="scope.row.status != 1"
             type="warning"
             link
             icon="Loading"
@@ -121,6 +123,18 @@ const searchInfo = ref({});
 
 const rules = ref({
   projectName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
+  configDir: [
+    { required: true, message: "请输入json文件目录", trigger: "blur" },
+  ],
+  svnUrl: [{ required: true, message: "请输入svn地址", trigger: "blur" }],
+  gmUrl: [{ required: true, message: "请输入gm地址", trigger: "blur" }],
+  gatewayUrl: [{ required: true, message: "请输入网关地址", trigger: "blur" }],
+});
+
+const projectStatus = ref<Record<number, string>>({
+  0: "未上线",
+  1: "已上线",
+  2: "上线失败",
 });
 
 const getTableData = () => {
