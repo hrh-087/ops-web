@@ -202,6 +202,7 @@ export default defineConfig(({ mode }: ConfigEnv): UserConfig => {
         "element-plus/es/components/backtop/style/index",
         "element-plus/es/components/message-box/style/index",
         "element-plus/es/components/badge/style/index",
+        "element-plus/es/components/input-tag/style/index",
       ],
     },
     // 构建配置

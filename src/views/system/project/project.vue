@@ -224,8 +224,13 @@ const initProject = (row: any) => {
     confirmButtonText: "确定",
     cancelButtonText: "取消",
     type: "warning",
-  }).then(async () => {
-    console.log(row);
+  }).then(() => {
+    ProjectApi.initProject(row).then((res: any) => {
+      ElMessage({
+        type: "success",
+        message: "开始初始化",
+      });
+    });
   });
 };
 

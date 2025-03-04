@@ -64,6 +64,14 @@ class ProjectApi {
       data: data,
     });
   }
+
+  static initProject(data: object) {
+    return request<any, APIResponse<object>>({
+      url: "/project/initProject/",
+      method: "post",
+      data: data,
+    });
+  }
 }
 
 export default ProjectApi;
