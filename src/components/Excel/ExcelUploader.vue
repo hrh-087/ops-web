@@ -32,18 +32,17 @@ interface ExcelRow {
 }
 
 // defineComponent({name:"UploadFilled "});
-const props = defineProps(["buttonName"]);
-const emit = defineEmits(["onDataParsed", "checkDataFormat"]);
-
-// const openDialog = () => {
-
-// };
-
-// const closeDialog = () => {
-//   dialogVisible.value = false;
-// };
-
-// const dialogVisible = ref(false);
+const props = defineProps({
+  buttonName: {
+    type: String,
+    default: "上传文件",
+  },
+  sheetNames: {
+    type: Array as PropType<string[]>,
+    default: () => [],
+  },
+});
+const emit = defineEmits(["onDataParsed"]);
 
 const upload = ref<UploadInstance>();
 const handleExceed: UploadProps["onExceed"] = (files) => {
@@ -63,20 +62,34 @@ const handleFileUpload = (uploadFile: any) => {
     const workbook = XLSX.read(data, { type: "array" });
 
     // 取第一个工作表
-    const sheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[sheetName];
+    // const sheetName = workbook.SheetNames[0];
+    // const worksheet = workbook.Sheets[sheetName];
 
-    // 解析 Excel 数据
-    let rawData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+    let sheetNames: string[] = [];
+    let excelData: Record<string, ExcelRow[]> = {};
 
-    // 触发检测数据格式
-    emit("checkDataFormat", rawData.length > 0 ? rawData[0] : []);
+    // 根据props的sheetNames获取工作表
+    if (props.sheetNames?.length <= 0) {
+      sheetNames.push(workbook.SheetNames[0]);
+    } else {
+      sheetNames = props.sheetNames;
+    }
 
-    // 格式化数据，合并空列名的数据
-    const formattedData: ExcelRow[] = formatExcelData(rawData);
+    for (let i = 0; i < sheetNames.length; i++) {
+      const worksheet = workbook.Sheets[sheetNames[i]];
+
+      // 解析 Excel 数据
+      let rawData: any[][] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      // 移除第二行跟第三行
+      rawData.splice(1, 2);
+
+      // 格式化数据，合并空列名的数据
+      excelData[sheetNames[i]] = formatExcelData(rawData);
+    }
 
     // 触发事件，向父组件传递数据
-    emit("onDataParsed", formattedData);
+    emit("onDataParsed", excelData);
   };
 
   reader.readAsArrayBuffer(file);

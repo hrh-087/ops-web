@@ -1,10 +1,26 @@
 <template>
   <div>
+    <div class="ops-search-box">
+      <span>渠道:</span>
+      <el-select
+        v-model="serverId"
+        placeholder="请选择渠道"
+        style="width: 180px"
+        @change="getRankList"
+      >
+        <el-option
+          v-for="item in platformData"
+          :key="item.platformCode"
+          :label="item.platformName"
+          :value="Number(item.platformCode)"
+        />
+      </el-select>
+    </div>
     <div class="ops-table-box">
       <div class="ops-btn-list">
         <ExcelUploader
           @on-data-parsed="handleParsedData"
-          @check-data-format="checkDataFormat"
+          :sheetNames="sheetNames"
           buttonName="批量导入"
         />
       </div>
@@ -17,7 +33,7 @@
           align="left"
           label="榜单id"
           min-width="120"
-          prop="id"
+          prop="rankId"
         />
 
         <el-table-column
@@ -29,18 +45,32 @@
 
         <el-table-column
           align="left"
-          label="榜单描述"
+          label="展示数量"
           min-width="120"
-          prop="desc"
+          prop="showCount"
         />
 
-        <el-table-column align="left" label="状态" min-width="120" prop="type">
+        <el-table-column
+          align="left"
+          label="开始时间"
+          min-width="120"
+          prop="startTime"
+        />
+
+        <el-table-column
+          align="left"
+          label="结束时间"
+          min-width="120"
+          prop="endTime"
+        />
+
+        <!-- <el-table-column align="left" label="状态" min-width="120" prop="type">
           <template #default="scope">
             <el-tag :type="scope.row.rankType == 1 ? 'primary' : 'warning'">
               {{ rankingListType[scope.row.rankType] }}
             </el-tag>
           </template>
-        </el-table-column>
+        </el-table-column> -->
 
         <el-table-column align="left" fixed="right" label="操作" width="300">
           <template #default="scope">
@@ -54,21 +84,56 @@
       <el-dialog
         v-model="dialogTableVisible"
         :title="dialogTableTitle"
-        width="1000px"
+        width="1500px"
         center
         :before-close="closeTablelog"
       >
         <el-table :data="rankingData">
-          <el-table-column property="id" label="榜单id" width="120" />
+          <el-table-column property="id" label="id" width="80" />
+          <el-table-column property="rankId" label="榜单id" width="120" />
+          <el-table-column property="rankName" label="榜单名称" width="200" />
+          <el-table-column property="showCount" label="展示数量" width="200" />
           <el-table-column property="startTime" label="开始时间" width="200" />
           <el-table-column property="endTime" label="结束时间" width="200" />
-          <el-table-column property="awardList" label="榜单奖励">
+          <el-table-column property="rewardList" label="榜单奖励">
             <template #default="scope">
-              {{
-                scope.row.awardList
-                  .map((item: any) => `${item.id}_${item.name}*${item.num}`)
-                  .join(",")
-              }}
+              <el-tooltip placement="bottom" effect="light">
+                <template #content>
+                  <div>
+                    <el-table
+                      :data="scope.row.rewardList"
+                      border
+                      height="300"
+                      width="300"
+                    >
+                      <el-table-column property="id" label="ID" width="120" />
+                      <el-table-column
+                        property="rankId"
+                        label="榜单id"
+                        width="120"
+                      />
+                      <el-table-column
+                        property="rank"
+                        label="排名"
+                        width="120"
+                      />
+                      <el-table-column label="奖励" width="120">
+                        <template #default="rewardScope">
+                          <el-tag
+                            v-for="(reward, index) in rewardScope.row.rewards"
+                            :key="index"
+                          >
+                            {{ reward.rewardId }}_{{ reward.rewardName }}*{{
+                              reward.rewardNum
+                            }}
+                          </el-tag>
+                        </template>
+                      </el-table-column>
+                    </el-table>
+                  </div>
+                </template>
+                <el-tag>查看奖励</el-tag>
+              </el-tooltip>
             </template>
           </el-table-column>
         </el-table>
@@ -105,11 +170,11 @@
           label-position="top"
         >
           <el-form-item label="榜单id">
-            <el-input v-model="form.id" autocomplete="off" disabled />
+            <el-input v-model="form.rankId" autocomplete="off" disabled />
           </el-form-item>
 
           <el-form-item label="榜单名称">
-            <el-input v-model="form.name" autocomplete="off" disabled />
+            <el-input v-model="form.rankName" autocomplete="off" disabled />
           </el-form-item>
 
           <el-form-item label="开始时间" prop="startTime">
@@ -117,7 +182,7 @@
               v-model="form.startTime"
               type="datetime"
               placeholder="请选择开始时间"
-              format="YYYY/MM/DD HH:mm:ss"
+              format="YYYY-MM-DD HH:mm:ss"
               date-format="MMM DD, YYYY"
               time-format="HH:mm"
             />
@@ -128,7 +193,7 @@
               v-model="form.endTime"
               type="datetime"
               placeholder="请选择结束时间"
-              format="YYYY/MM/DD HH:mm:ss"
+              format="YYYY-MM-DD HH:mm:ss"
               date-format="MMM DD, YYYY"
               time-format="HH:mm"
             />
@@ -136,37 +201,64 @@
 
           <div>
             <div class="flex items-center gap-2">
-              <el-button type="primary" icon="edit" @click="addaward()">
+              <el-button
+                type="primary"
+                icon="edit"
+                @click="addaward(form.rewardList.length + 1, form.rankId)"
+              >
                 新增奖励参数
               </el-button>
             </div>
 
             <el-table
-              :data="form.awardList"
+              :data="form.rewardList"
+              :default-sort="{ prop: 'id', order: 'ascending' }"
               style="width: 100%; margin-top: 12px"
+              key="id"
             >
-              <el-table-column align="left" prop="id" label="奖励id">
+              <el-table-column align="left" prop="id" label="id" sortable>
                 <template #default="scope">
-                  <el-input v-model="scope.row.id" />
+                  <el-input v-model="scope.row.id" disabled />
                 </template>
               </el-table-column>
 
-              <el-table-column align="left" prop="num" label="奖励数量">
+              <el-table-column align="left" prop="rankId" label="榜单id">
+                <template #default="scope">
+                  <el-input v-model="scope.row.rankId" disabled />
+                </template>
+              </el-table-column>
+
+              <el-table-column align="left" prop="rank" label="排名">
+                <template #default="scope">
+                  <el-input v-model="scope.row.rank" />
+                </template>
+              </el-table-column>
+
+              <!-- <el-table-column align="left" prop="num" label="奖励数量">
                 <template #default="scope">
                   <div>
                     <el-input v-model.number="scope.row.num" />
                   </div>
                 </template>
-              </el-table-column>
+              </el-table-column> -->
               <el-table-column align="left">
                 <template #default="scope">
                   <div>
                     <el-button
                       type="danger"
                       icon="delete"
-                      @click="deleteaward(form.awardList, scope.$index)"
+                      link
+                      @click="deleteaward(form.rewardList, scope.$index)"
                     >
                       删除
+                    </el-button>
+                    <el-button
+                      type="warning"
+                      icon="edit"
+                      link
+                      @click="editward(form.rewardList, scope.$index)"
+                    >
+                      修改奖励
                     </el-button>
                   </div>
                 </template>
@@ -175,73 +267,184 @@
           </div>
         </el-form>
       </el-drawer>
+
+      <el-dialog
+        v-model="dialogRewardFormVisible"
+        :title="dialogRewardFormTitle"
+        width="600px"
+        center
+        :before-close="closeRewardlog"
+      >
+        <div>
+          <el-button icon="plus" link @click="addReward()">添加</el-button>
+        </div>
+        <el-table
+          :data="rewardForm"
+          :default-sort="{ prop: 'id', order: 'ascending' }"
+          style="width: 100%; margin-top: 12px"
+          key="id"
+        >
+          <!-- <el-table-column align="left" prop="id" label="id">
+            <template #default="scope">
+              <el-input v-model="scope.row.id" disabled/>
+            </template>
+          </el-table-column> -->
+
+          <el-table-column align="left" prop="rewardId" label="奖励id">
+            <template #default="scope">
+              <el-input v-model="scope.row.rewardId" />
+            </template>
+          </el-table-column>
+
+          <el-table-column align="left" prop="rewardNum" label="奖励数量">
+            <template #default="scope">
+              <el-input v-model.number="scope.row.rewardNum" />
+            </template>
+          </el-table-column>
+
+          <el-table-column align="left" prop="rewardNum" label="操作">
+            <template #default="scope">
+              <el-button type="danger" @click="deleteReward(scope.$index)">
+                删除
+              </el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <template #footer>
+          <el-button type="primary" @click="setReward()">确定</el-button>
+          <el-button @click="closeRewardlog()">取消</el-button>
+        </template>
+      </el-dialog>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import ExcelUploader from "@/components/Excel/ExcelUploader.vue";
-import GmRankingListApi, {
-  type GmRankingList,
-  RankingForm,
-  RankingListAward,
+import GmRankApi, {
+  type GmRankList,
+  RankOpenForm,
+  RankRewardForm,
+  RankReward,
 } from "@/api/gm/ranking-list";
-// import PlatformApi, { type Platform } from "@/api/game-config/platform";
+import PlatformApi, { type Platform } from "@/api/game-config/platform";
 
 defineOptions({ name: "RankingList" });
 
 const rules = {};
+const sheetNames = ["open", "reward"];
 
-const tableData = ref<GmRankingList[] | any>([
-  {
-    id: 1,
-    name: "排行榜1",
-    rankType: 2,
-    desc: "排行榜描述",
-    awardList: [{ id: 1, name: "奖励1", num: 1 }],
-  },
-]);
+const tableData = ref<GmRankList[] | any>([]);
 
 const rankingListType = ref<Record<number, string>>({
   1: "排行榜",
   2: "英雄榜",
 });
 
-// const serverId = ref<number>();
-// const platformData = ref<Platform[] | any>([]);
-
+const platformData = ref<Platform[] | any>([]);
+const serverId = ref<number>();
 const getTableData = () => {
-  // PlatformApi.getPlatformAll().then((res: any) => {
-  //   platformData.value = res.data;
-  // });
+  PlatformApi.getPlatformAll().then((res: any) => {
+    platformData.value = res.data;
+  });
 };
 
 getTableData();
 
+const getRankList = () => {
+  GmRankApi.getRankList({
+    serverId: serverId.value,
+  }).then((res: any) => {
+    tableData.value = res.data;
+  });
+};
+
 // 添加奖励参数
-const addaward = () => {
-  if (!form.value.awardList) {
-    form.value.awardList = [];
+const addaward = (id: number, rankId: number) => {
+  if (!form.value.rewardList) {
+    form.value.rewardList = [];
   }
-  form.value.awardList.push({
-    id: "",
-    name: "",
-    num: 0,
+  form.value.rewardList.push({
+    id: id,
+    rankId: rankId,
+    rank: 0,
+    rewards: [],
   });
 };
 
 // 删除奖励参数
-const deleteaward = (awardList: any, index: number) => {
-  awardList.splice(index, 1);
+const deleteaward = (rewardList: any, index: number) => {
+  rewardList.splice(index, 1);
+};
+
+const currentIndex = ref(0);
+// 编辑奖励参数
+const editward = (rewardList: any, index: number) => {
+  const rewards = rewardList[index].rewards;
+  // 打开弹窗
+  currentIndex.value = index;
+  if (!rewards) {
+    rewardForm.value = [];
+  } else {
+    rewardForm.value = [...rewards];
+  }
+
+  openRewardDialog();
+};
+
+const openRewardDialog = () => {
+  dialogRewardFormVisible.value = true;
+};
+
+const dialogRewardFormVisible = ref(false);
+const dialogRewardFormTitle = ref("编辑奖励");
+const rewardForm = ref<RankReward[]>([]);
+
+const closeRewardlog = () => {
+  dialogRewardFormVisible.value = false;
+  rewardForm.value = [];
+  currentIndex.value = 0;
+};
+
+const setReward = () => {
+  // 确保 rewards 是一个数组
+  if (!form.value.rewardList[currentIndex.value].rewards) {
+    form.value.rewardList[currentIndex.value].rewards = [];
+  }
+  // 将 rewardForm.value 赋值给 rewards
+  form.value.rewardList[currentIndex.value].rewards = rewardForm.value;
+
+  rewardForm.value = [];
+  currentIndex.value = 0;
+
+  closeRewardlog();
+};
+
+const addReward = () => {
+  if (!rewardForm.value) {
+    rewardForm.value = [];
+  }
+  rewardForm.value.push({
+    rewardId: "",
+    rewardName: "",
+    rewardNum: 0,
+  });
+};
+
+const deleteReward = (index: number) => {
+  rewardForm.value.splice(index, 1);
 };
 
 const dialogFormVisible = ref(false);
 const dialogFormTitle = ref("配置");
-const form = ref<RankingForm>({
-  id: "",
+const form = ref<RankOpenForm>({
+  id: 0,
+  rankId: 0,
+  showCount: 0,
   startTime: "",
   endTime: "",
-  awardList: [],
+  rewardList: [],
 });
 const rankingForm = ref();
 
@@ -250,16 +453,25 @@ const initForm = () => {
     rankingForm.value.resetFields();
   }
   form.value = {
-    id: "",
+    id: 0,
+    rankId: 0,
+    showCount: 0,
     startTime: "",
     endTime: "",
-    awardList: [],
+    rewardList: [],
   };
 };
 
 const openDialog = (row: any) => {
   form.value = row;
-  dialogFormVisible.value = true;
+  GmRankApi.getRankRewardList({
+    serverId: serverId.value,
+    rankId: row.rankId,
+  }).then((res: any) => {
+    form.value = row;
+    form.value.rewardList = res.data;
+    dialogFormVisible.value = true;
+  });
 };
 
 const closeDialog = () => {
@@ -269,60 +481,88 @@ const closeDialog = () => {
 
 const dialogTableTitle = ref("导入结果");
 const dialogTableVisible = ref(false);
-const rankingData = ref<RankingForm[]>([]);
+const rankingData = ref<RankOpenForm[]>([]);
 
 const closeTablelog = () => {
   dialogTableVisible.value = false;
   rankingData.value = [];
 };
 // 获取excel数据
-const handleParsedData = (data: never[]) => {
-  data.forEach((item: any) => {
-    let award: RankingListAward[] = [];
-    item.awardList?.forEach((item: any) => {
-      let awardId = item.split("_")[0];
-      let awardName = item.split("_")[1].split("*")[0];
-      let awardNum = item.split("*")[1];
-      award.push({
-        id: awardId,
-        name: awardName,
-        num: awardNum,
-      });
-    });
+const handleParsedData = (data: Record<string, []>) => {
+  console.log("data", data);
 
-    rankingData.value.push({
+  // 获取榜单配置参数
+  rankingData.value = (data["open"] as RankOpenForm[]).map(
+    (item: RankOpenForm) => ({
       id: item.id,
-      name: item.name,
+      rankId: item.rankId,
+      showCount: item.showCount,
+      rankName: item.rankName,
       startTime: item.startTime,
       endTime: item.endTime,
-      awardList: award,
-    });
-  });
-  // 校验通过则展示表格
-  if (checkDataResult.value) {
-    dialogTableVisible.value = true;
-  } else {
-    rankingData.value = [];
-  }
-};
+      rewardList: [],
+    })
+  );
 
-const checkDataResult = ref(true);
-// 检测excel格式
-const checkDataFormat = (data: string[]) => {
-  let arr = ["id", "startTime", "endTime", "awardList"];
-  checkDataResult.value = true;
-  for (const element of arr) {
-    console.log(element, data);
-    if (!data.includes(element)) {
-      ElMessage({
-        type: "error",
-        message: "表格格式有误",
-      });
-      checkDataResult.value = false;
-      return;
+  for (const item of data["reward"] as RankRewardForm[]) {
+    for (const item2 of rankingData.value) {
+      try {
+        if (item.rankId === item2.rankId) {
+          let rankReward: RankReward[] = [];
+
+          // 如果奖励为空，则忽略
+          if (item.rewards === undefined) {
+            rankReward = [];
+          } else {
+            let reward = JSON.parse(item.rewards.toString());
+            for (const key in reward) {
+              rankReward.push({
+                // id: item.id,
+                rewardId: key,
+                rewardName: "",
+                rewardNum: reward[key],
+              });
+            }
+          }
+          // 追加奖励参数
+          item2.rewardList.push({
+            id: item.id,
+            rankId: item.rankId,
+            rank: item.rank,
+            rewards: rankReward,
+          });
+        }
+      } catch (error) {
+        console.log("rewards", item.rewards);
+        console.log(error);
+        ElMessage.error({
+          message: "奖励配置无法解析",
+        });
+        return;
+      }
     }
   }
+  dialogTableVisible.value = true;
+  console.log("rankingData", rankingData.value);
 };
+
+// const checkDataResult = ref(true);
+// 检测excel格式
+// const checkDataFormat = (data: string[]) => {
+//   let arr = ["id", "startTime", "endTime", "rewardList"];
+//   checkDataResult.value = true;
+//   for (const element of arr) {
+//     console.log(element, data);
+//     if (!data.includes(element)) {
+//       ElMessage({
+//         type: "error",
+//         message: "表格格式有误",
+//       });
+//       checkDataResult.value = false;
+//       return;
+//     }
+//   }
+// };
 
 const setRankingList = (key: number) => {
   switch (key) {
@@ -332,14 +572,17 @@ const setRankingList = (key: number) => {
 
   console.log(rankingData.value);
 
-  // GmRankingListApi.setRankingList(rankingData.value).then((res:any) => {
-  //   ElMessage({
-  //     type: "success",
-  //     message: "配置成功",
-  //   });
-  //   closeDialog();
-  //   closeTablelog();
-  // });
+  GmRankApi.setRankReward({
+    serverId: serverId.value,
+    rankConfig: rankingData.value,
+  }).then((res: any) => {
+    ElMessage({
+      type: "success",
+      message: "配置成功",
+    });
+    closeDialog();
+    closeTablelog();
+  });
 };
 
 // const rankingForm = ref<GmRankingList[]>([])

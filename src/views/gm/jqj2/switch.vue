@@ -12,7 +12,7 @@
           v-for="item in platformData"
           :key="item.platformCode"
           :label="item.platformName"
-          :value="item.platformCode"
+          :value="Number(item.platformCode)"
         />
       </el-select>
     </div>
