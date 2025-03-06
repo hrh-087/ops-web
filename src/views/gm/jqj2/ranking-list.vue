@@ -22,13 +22,22 @@
           @on-data-parsed="handleParsedData"
           :sheetNames="sheetNames"
           buttonName="批量导入"
+          excelName="rankTemplate.xlsx"
         />
       </div>
       <el-table
         :data="tableData"
         row-key="id"
+        :default-sort="{ prop: 'id', order: 'descending' }"
         style="width: 100%; margin-top: 15px"
       >
+        <el-table-column
+          align="left"
+          label="id"
+          min-width="120"
+          prop="id"
+          sortable=""
+        />
         <el-table-column
           align="left"
           label="榜单id"
@@ -214,7 +223,7 @@
               :data="form.rewardList"
               :default-sort="{ prop: 'id', order: 'ascending' }"
               style="width: 100%; margin-top: 12px"
-              key="id"
+              row-key="id"
             >
               <el-table-column align="left" prop="id" label="id" sortable>
                 <template #default="scope">

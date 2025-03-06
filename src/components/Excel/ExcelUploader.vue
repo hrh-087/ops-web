@@ -13,6 +13,15 @@
       <template #trigger>
         <el-button type="primary">{{ buttonName || "上传文件" }}</el-button>
       </template>
+      <el-button
+        v-if="excelName != ''"
+        type="primary"
+        link
+        style="padding-left: 15px"
+        @click="downloadLocalFile"
+      >
+        下载模板
+      </el-button>
       <template #tip>
         <div class="el-upload__tip text-red">
           限制上传1个文件(新文件会覆盖旧文件)
@@ -40,6 +49,10 @@ const props = defineProps({
   sheetNames: {
     type: Array as PropType<string[]>,
     default: () => [],
+  },
+  excelName: {
+    type: String,
+    default: "",
   },
 });
 const emit = defineEmits(["onDataParsed"]);
@@ -125,5 +138,15 @@ const formatExcelData = (rawData: any[][]): ExcelRow[] => {
   });
 
   return formattedData;
+};
+
+const downloadLocalFile = () => {
+  const fileUrl = `/excel/${props.excelName}`; // 确保 Excel 文件放在 public/excel 目录下
+  const a = document.createElement("a");
+  a.href = fileUrl;
+  a.download = "排行榜.xlsx"; // 指定下载时的文件名
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 };
 </script>
