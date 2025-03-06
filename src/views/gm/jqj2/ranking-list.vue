@@ -475,7 +475,7 @@ const openDialog = (row: any) => {
   form.value = row;
   GmRankApi.getRankRewardList({
     serverId: serverId.value,
-    rankId: row.rankId,
+    id: row.id,
   }).then((res: any) => {
     form.value = row;
     form.value.rewardList = res.data;
