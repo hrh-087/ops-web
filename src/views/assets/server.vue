@@ -1,35 +1,36 @@
 <template>
-  <div>
-    <div>
-      <el-form ref="searchForm" :inline="true" :model="searchInfo">
-        <el-form-item label="名称 ">
-          <el-input v-model="searchInfo.name" placeholder="服务器名称" />
-        </el-form-item>
+  <div class="ops-search-box">
+    <el-form ref="searchForm" :inline="true" :model="searchInfo">
+      <el-form-item label="名称 ">
+        <el-input v-model="searchInfo.name" placeholder="服务器名称" />
+      </el-form-item>
 
-        <el-form-item label="渠道">
-          <el-select
-            v-model="searchInfo.platformId"
-            clearable
-            placeholder="请选择"
-            style="width: 200px"
-          >
-            <el-option
-              v-for="item in platformData"
-              :key="item.ID"
-              :label="item.platformName"
-              :value="item.ID"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="search" @click="onSubmit">
-            查询
-          </el-button>
-          <el-button icon="refresh" @click="onReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-    <div>
+      <el-form-item label="渠道">
+        <el-select
+          v-model="searchInfo.platformId"
+          clearable
+          placeholder="请选择"
+          style="width: 200px"
+        >
+          <el-option
+            v-for="item in platformData"
+            :key="item.ID"
+            :label="item.platformName"
+            :value="item.ID"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="search" @click="onSubmit">
+          查询
+        </el-button>
+        <el-button icon="refresh" @click="onReset">重置</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+
+  <div class="ops-table-box">
+    <div class="ops-btn-list">
       <el-button type="primary" icon="plus" @click="addAssetsServer()">
         新增服务器
       </el-button>

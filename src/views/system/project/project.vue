@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div class="ops-table-box">
+    <div class="ops-btn-list">
       <el-button type="primary" icon="plus" @click="addProject()">
         新增项目
       </el-button>
@@ -67,46 +67,46 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
-
-      <el-drawer
-        v-model="dialogFormVisible"
-        size="50%"
-        :before-close="closeDialog"
-        :show-close="false"
-      >
-        <template #header>
-          <div class="flex justify-between items-center">
-            <span class="text-lg">{{ dialogTitle }}</span>
-            <div>
-              <el-button @click="closeDialog">取 消</el-button>
-              <el-button type="primary" @click="enterDialog">确 定</el-button>
-            </div>
-          </div>
-        </template>
-        <el-form
-          ref="projectForm"
-          :model="form"
-          :rules="rules"
-          label-width="150px"
-        >
-          <el-form-item label="项目名称" prop="projectName">
-            <el-input v-model="form.projectName" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="json文件目录" prop="configDir">
-            <el-input v-model.trim="form.configDir" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="json仓库路径" prop="svnUrl">
-            <el-input v-model.trim="form.svnUrl" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="gm地址" prop="gmUrl">
-            <el-input v-model.trim="form.gmUrl" autocomplete="off" />
-          </el-form-item>
-          <el-form-item label="网关地址" prop="gatewayUrl">
-            <el-input v-model.trim="form.gatewayUrl" autocomplete="off" />
-          </el-form-item>
-        </el-form>
-      </el-drawer>
     </div>
+
+    <el-drawer
+      v-model="dialogFormVisible"
+      size="50%"
+      :before-close="closeDialog"
+      :show-close="false"
+    >
+      <template #header>
+        <div class="flex justify-between items-center">
+          <span class="text-lg">{{ dialogTitle }}</span>
+          <div>
+            <el-button @click="closeDialog">取 消</el-button>
+            <el-button type="primary" @click="enterDialog">确 定</el-button>
+          </div>
+        </div>
+      </template>
+      <el-form
+        ref="projectForm"
+        :model="form"
+        :rules="rules"
+        label-width="150px"
+      >
+        <el-form-item label="项目名称" prop="projectName">
+          <el-input v-model="form.projectName" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="json文件目录" prop="configDir">
+          <el-input v-model.trim="form.configDir" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="json仓库路径" prop="svnUrl">
+          <el-input v-model.trim="form.svnUrl" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="gm地址" prop="gmUrl">
+          <el-input v-model.trim="form.gmUrl" autocomplete="off" />
+        </el-form-item>
+        <el-form-item label="网关地址" prop="gatewayUrl">
+          <el-input v-model.trim="form.gatewayUrl" autocomplete="off" />
+        </el-form-item>
+      </el-form>
+    </el-drawer>
   </div>
 </template>
 

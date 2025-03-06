@@ -1,36 +1,35 @@
 <template>
-  <div>
-    <div>
-      <el-form ref="searchForm" :inline="true" :model="searchInfo">
-        <el-form-item label="名称 ">
-          <el-input v-model="searchInfo.name" placeholder="服务器名称" />
-        </el-form-item>
+  <div class="ops-search-box">
+    <el-form ref="searchForm" :inline="true" :model="searchInfo">
+      <el-form-item label="名称 ">
+        <el-input v-model="searchInfo.name" placeholder="服务器名称" />
+      </el-form-item>
 
-        <el-form-item label="渠道">
-          <el-select
-            v-model="searchInfo.platformId"
-            clearable
-            placeholder="请选择"
-            style="width: 200px"
-          >
-            <el-option
-              v-for="item in platformData"
-              :key="item.ID"
-              :label="item.platformName"
-              :value="item.ID"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="search" @click="onSubmit">
-            查询
-          </el-button>
-          <el-button icon="refresh" @click="onReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
-
-    <div>
+      <el-form-item label="渠道">
+        <el-select
+          v-model="searchInfo.platformId"
+          clearable
+          placeholder="请选择"
+          style="width: 200px"
+        >
+          <el-option
+            v-for="item in platformData"
+            :key="item.ID"
+            :label="item.platformName"
+            :value="Number(item.ID)"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" icon="search" @click="onSubmit">
+          查询
+        </el-button>
+        <el-button icon="refresh" @click="onReset">重置</el-button>
+      </el-form-item>
+    </el-form>
+  </div>
+  <div class="ops-table-box">
+    <div class="ops-btn-list">
       <el-button type="primary" icon="plus" @click="addAssetsRedis()">
         新增
       </el-button>
@@ -118,97 +117,82 @@
         @current-change="handleCurrentChange"
         @size-change="handleSizeChange"
       />
-
-      <el-drawer
-        v-model="dialogFormVisible"
-        size="50%"
-        :before-close="closeDialog"
-        :show-close="false"
-      >
-        <template #header>
-          <div class="flex justify-between items-center">
-            <span class="text-lg">{{ dialogTitle }}</span>
-            <div>
-              <el-button @click="closeDialog">取 消</el-button>
-              <el-button type="primary" @click="enterDialog">确 定</el-button>
-            </div>
-          </div>
-        </template>
-        <el-form
-          ref="assetsRedisForm"
-          :model="form"
-          :rules="rules"
-          label-width="120px"
-        >
-          <el-form-item label="名称" prop="name" style="width: 70%" required>
-            <el-input
-              v-model="form.name"
-              autocomplete="off"
-              placeholder="渠道名称-服务类型-编号: 887711-redis-0001"
-            />
-          </el-form-item>
-
-          <el-form-item
-            label="连接地址"
-            prop="host"
-            style="width: 70%"
-            required
-          >
-            <el-input
-              v-model="form.host"
-              autocomplete="off"
-              placeholder="127.0.0.1"
-            />
-          </el-form-item>
-
-          <el-form-item
-            label="连接端口"
-            prop="port"
-            style="width: 70%"
-            required
-          >
-            <el-input
-              v-model.number="form.port"
-              autocomplete="off"
-              placeholder="6379"
-            />
-          </el-form-item>
-
-          <el-form-item label="认证信息" prop="password" style="width: 70%">
-            <el-input
-              v-model="form.password"
-              autocomplete="off"
-              placeholder="密码"
-            />
-          </el-form-item>
-
-          <el-form-item
-            label="渠道"
-            prop="platformId"
-            style="width: 70%"
-            required
-          >
-            <el-select
-              v-model.number="form.platformId"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in platformData"
-                :key="item.ID"
-                :label="item.platformName"
-                :value="item.ID"
-              />
-            </el-select>
-          </el-form-item>
-
-          <el-form-item label="是否为集群" prop="isCluster" style="width: 70%">
-            <el-switch v-model="form.isCluster" />
-          </el-form-item>
-        </el-form>
-      </el-drawer>
     </div>
   </div>
+
+  <el-drawer
+    v-model="dialogFormVisible"
+    size="50%"
+    :before-close="closeDialog"
+    :show-close="false"
+  >
+    <template #header>
+      <div class="flex justify-between items-center">
+        <span class="text-lg">{{ dialogTitle }}</span>
+        <div>
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="enterDialog">确 定</el-button>
+        </div>
+      </div>
+    </template>
+    <el-form
+      ref="assetsRedisForm"
+      :model="form"
+      :rules="rules"
+      label-width="120px"
+    >
+      <el-form-item label="名称" prop="name" style="width: 70%" required>
+        <el-input
+          v-model="form.name"
+          autocomplete="off"
+          placeholder="渠道名称-服务类型-编号: 887711-redis-0001"
+        />
+      </el-form-item>
+
+      <el-form-item label="连接地址" prop="host" style="width: 70%" required>
+        <el-input
+          v-model="form.host"
+          autocomplete="off"
+          placeholder="127.0.0.1"
+        />
+      </el-form-item>
+
+      <el-form-item label="连接端口" prop="port" style="width: 70%" required>
+        <el-input
+          v-model.number="form.port"
+          autocomplete="off"
+          placeholder="6379"
+        />
+      </el-form-item>
+
+      <el-form-item label="认证信息" prop="password" style="width: 70%">
+        <el-input
+          v-model="form.password"
+          autocomplete="off"
+          placeholder="密码"
+        />
+      </el-form-item>
+
+      <el-form-item label="渠道" prop="platformId" style="width: 70%" required>
+        <el-select
+          v-model.number="form.platformId"
+          placeholder="请选择"
+          style="width: 100%"
+        >
+          <el-option
+            v-for="item in platformData"
+            :key="item.ID"
+            :label="item.platformName"
+            :value="Number(item.ID)"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="是否为集群" prop="isCluster" style="width: 70%">
+        <el-switch v-model="form.isCluster" />
+      </el-form-item>
+    </el-form>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">

@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div>
+  <div class="ops-table-box">
+    <div class="ops-btn-list">
       <el-button type="danger" @click="openDialog('add')">
         同步云服务资源
       </el-button>
@@ -71,49 +71,44 @@
         </template>
       </el-table-column>
     </el-table>
-
-    <el-dialog v-model="dialogFormVisible" :title="dialogTitle" width="500px">
-      <el-form
-        :model="form"
-        :rules="rules"
-        ref="assetsLbForm"
-        label-width="10px"
-      >
-        <el-form-item label="渠道:" label-width="140px" prop="platformId">
-          <el-select v-model.number="form.platformId" placeholder="请选择渠道">
-            <el-option label="----" :value="-1" />
-            <el-option
-              v-for="item in platformOptions"
-              :key="item.ID"
-              :label="item.platformName"
-              :value="item.ID"
-            />
-          </el-select>
-        </el-form-item>
-
-        <el-form-item label="云商:" label-width="140px" prop="cloudProduceId">
-          <el-select
-            v-model.number="form.cloudProduceId"
-            placeholder="请选择云商"
-          >
-            <el-option label="----" :value="-1" />
-            <el-option
-              v-for="item in cloudProduceOptions"
-              :key="item.ID"
-              :label="item.regionName"
-              :value="item.ID"
-            />
-          </el-select>
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button @click="closeDialog">取消</el-button>
-          <el-button type="primary" @click="rsyncCloudResource">确认</el-button>
-        </div>
-      </template>
-    </el-dialog>
   </div>
+
+  <el-dialog v-model="dialogFormVisible" :title="dialogTitle" width="500px">
+    <el-form :model="form" :rules="rules" ref="assetsLbForm" label-width="10px">
+      <el-form-item label="渠道:" label-width="140px" prop="platformId">
+        <el-select v-model.number="form.platformId" placeholder="请选择渠道">
+          <el-option label="----" :value="-1" />
+          <el-option
+            v-for="item in platformOptions"
+            :key="item.ID"
+            :label="item.platformName"
+            :value="item.ID"
+          />
+        </el-select>
+      </el-form-item>
+
+      <el-form-item label="云商:" label-width="140px" prop="cloudProduceId">
+        <el-select
+          v-model.number="form.cloudProduceId"
+          placeholder="请选择云商"
+        >
+          <el-option label="----" :value="-1" />
+          <el-option
+            v-for="item in cloudProduceOptions"
+            :key="item.ID"
+            :label="item.regionName"
+            :value="item.ID"
+          />
+        </el-select>
+      </el-form-item>
+    </el-form>
+    <template #footer>
+      <div class="dialog-footer">
+        <el-button @click="closeDialog">取消</el-button>
+        <el-button type="primary" @click="rsyncCloudResource">确认</el-button>
+      </div>
+    </template>
+  </el-dialog>
 </template>
 
 <script setup lang="ts">

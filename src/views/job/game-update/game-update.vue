@@ -1,193 +1,196 @@
 <template>
-  <div>
-    <el-button type="primary" icon="plus" @click="addupdate()">
-      新增更新任务
-    </el-button>
+  <div class="ops-table-box">
+    <div class="ops-btn-list">
+      <el-button type="primary" icon="plus" @click="addupdate()">
+        新增更新任务
+      </el-button>
+    </div>
+    <el-table
+      :data="tableData"
+      row-key="ID"
+      style="width: 100%; margin-top: 15px"
+    >
+      <el-table-column align="left" label="名称" min-width="120" prop="name" />
+      <el-table-column
+        align="left"
+        label="类型"
+        min-width="120"
+        prop="updateType"
+      >
+        <template #default="scope">
+          {{
+            updateTypeOpteions.find(
+              (item) => item.value === scope.row.updateType
+            )?.label
+          }}
+        </template>
+      </el-table-column>
+      <el-table-column
+        align="left"
+        label="创建时间"
+        min-width="120"
+        prop="CreatedAt"
+      />
+      <el-table-column
+        align="left"
+        label="更新时间"
+        min-width="120"
+        prop="UpdatedAt"
+      />
+
+      <el-table-column align="left" fixed="right" label="操作" width="300">
+        <template #default="scope">
+          <el-button
+            type="primary"
+            link
+            icon="view"
+            @click="checkupdate(scope.row)"
+          >
+            查看
+          </el-button>
+          <!-- <el-button
+            type="primary"
+            link
+            icon="edit"
+            @click="editupdate(scope.row)"
+          >
+            编辑
+          </el-button> -->
+          <el-button
+            type="primary"
+            link
+            icon="delete"
+            @click="deleteupdate(scope.row)"
+          >
+            删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <div class="ops-pagination">
+      <el-pagination
+        :current-page="page"
+        :page-size="pageSize"
+        :page-sizes="[10, 30, 50, 100]"
+        :total="total"
+        layout="total, sizes, prev, pager, next, jumper"
+        @current-change="handleCurrentChange"
+        @size-change="handleSizeChange"
+      />
+    </div>
   </div>
-  <el-table
-    :data="tableData"
-    row-key="ID"
-    style="width: 100%; margin-top: 15px"
+
+  <el-drawer
+    v-model="dialogFormVisible"
+    size="50%"
+    :before-close="closeDialog"
+    :show-close="false"
   >
-    <el-table-column align="left" label="名称" min-width="120" prop="name" />
-    <el-table-column
-      align="left"
-      label="类型"
-      min-width="120"
-      prop="updateType"
-    >
-      <template #default="scope">
-        {{
-          updateTypeOpteions.find((item) => item.value === scope.row.updateType)
-            ?.label
-        }}
-      </template>
-    </el-table-column>
-    <el-table-column
-      align="left"
-      label="创建时间"
-      min-width="120"
-      prop="CreatedAt"
-    />
-    <el-table-column
-      align="left"
-      label="更新时间"
-      min-width="120"
-      prop="UpdatedAt"
-    />
-
-    <el-table-column align="left" fixed="right" label="操作" width="300">
-      <template #default="scope">
-        <el-button
-          type="primary"
-          link
-          icon="view"
-          @click="checkupdate(scope.row)"
-        >
-          查看
-        </el-button>
-        <!-- <el-button
-          type="primary"
-          link
-          icon="edit"
-          @click="editupdate(scope.row)"
-        >
-          编辑
-        </el-button> -->
-        <el-button
-          type="primary"
-          link
-          icon="delete"
-          @click="deleteupdate(scope.row)"
-        >
-          删除
-        </el-button>
-      </template>
-    </el-table-column>
-  </el-table>
-
-  <div class="ops-pagination">
-    <el-pagination
-      :current-page="page"
-      :page-size="pageSize"
-      :page-sizes="[10, 30, 50, 100]"
-      :total="total"
-      layout="total, sizes, prev, pager, next, jumper"
-      @current-change="handleCurrentChange"
-      @size-change="handleSizeChange"
-    />
-
-    <el-drawer
-      v-model="dialogFormVisible"
-      size="50%"
-      :before-close="closeDialog"
-      :show-close="false"
-    >
-      <template #header>
-        <div class="flex justify-between items-center">
-          <span class="text-lg">{{ dialogTitle }}</span>
-          <div>
-            <el-button @click="closeDialog">取 消</el-button>
-            <el-button type="primary" @click="enterDialog">确 定</el-button>
-          </div>
+    <template #header>
+      <div class="flex justify-between items-center">
+        <span class="text-lg">{{ dialogTitle }}</span>
+        <div>
+          <el-button @click="closeDialog">取 消</el-button>
+          <el-button type="primary" @click="enterDialog">确 定</el-button>
         </div>
-      </template>
-      <el-form ref="updateForm" :model="form" :rules="rules" label-width="10%">
-        <el-form-item label="任务名称" prop="name">
-          <el-input v-model="form.name" autocomplete="off" />
-        </el-form-item>
+      </div>
+    </template>
+    <el-form ref="updateForm" :model="form" :rules="rules" label-width="10%">
+      <el-form-item label="任务名称" prop="name">
+        <el-input v-model="form.name" autocomplete="off" />
+      </el-form-item>
 
-        <el-form-item label="更新类型" prop="updateType">
+      <el-form-item label="更新类型" prop="updateType">
+        <el-select
+          v-model="form.updateType"
+          clearable
+          placeholder="请选择类型"
+          style="width: 240px"
+        >
+          <el-option
+            v-for="item in updateTypeOpteions"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+      </el-form-item>
+      <template v-if="form.updateType === 1">
+        <el-form-item label="游戏版本号:" prop="gameVersion">
+          <el-input v-model="form.gameVersion" autocomplete="off" />
+        </el-form-item>
+      </template>
+      <template v-else-if="form.updateType === 2">
+        <el-form-item label="热更类型" prop="serverType">
           <el-select
-            v-model="form.updateType"
+            v-model="form.serverType"
             clearable
-            placeholder="请选择类型"
+            placeholder="请选择热更类型"
+            @change="changeServerType"
             style="width: 240px"
           >
             <el-option
-              v-for="item in updateTypeOpteions"
+              v-for="item in serverTypeOptions"
               :key="item.value"
               :label="item.label"
               :value="item.value"
             />
           </el-select>
         </el-form-item>
-        <template v-if="form.updateType === 1">
-          <el-form-item label="游戏版本号:" prop="gameVersion">
-            <el-input v-model="form.gameVersion" autocomplete="off" />
-          </el-form-item>
-        </template>
-        <template v-else-if="form.updateType === 2">
-          <el-form-item label="热更类型" prop="serverType">
-            <el-select
-              v-model="form.serverType"
-              clearable
-              placeholder="请选择热更类型"
-              @change="changeServerType"
-              style="width: 240px"
-            >
-              <el-option
-                v-for="item in serverTypeOptions"
-                :key="item.value"
-                :label="item.label"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
 
-          <el-form-item label="热更对象" prop="serverList">
-            <el-select
-              v-model="form.serverList"
-              placeholder="请选择对象"
-              size="large"
-              style="width: 600px"
-              clearable
-              multiple
-            >
-              <el-option
-                v-for="item in hotUpdateObjList"
-                :key="item.ID"
-                :label="
-                  form.serverType == 1
-                    ? `${item.gameType.code}_${item.vmid}`
-                    : item.name
-                "
-                :value="item.ID"
-              />
-              <el-option
-                v-if="!hotUpdateObjList.length"
-                :value="-1"
-                disabled
-                label="加载中..."
-              />
-            </el-select>
-          </el-form-item>
+        <el-form-item label="热更对象" prop="serverList">
+          <el-select
+            v-model="form.serverList"
+            placeholder="请选择对象"
+            size="large"
+            style="width: 600px"
+            clearable
+            multiple
+          >
+            <el-option
+              v-for="item in hotUpdateObjList"
+              :key="item.ID"
+              :label="
+                form.serverType == 1
+                  ? `${item.gameType.code}_${item.vmid}`
+                  : item.name
+              "
+              :value="item.ID"
+            />
+            <el-option
+              v-if="!hotUpdateObjList.length"
+              :value="-1"
+              disabled
+              label="加载中..."
+            />
+          </el-select>
+        </el-form-item>
 
-          <el-form-item label="热更文件" prop="hotFile">
-            <el-upload
-              ref="uploadfileRef"
-              class="upload-wrapper"
-              :limit="1"
-              :auto-upload="false"
-              action="#"
-              :on-change="handleFileChange"
-              drag
-            >
-              <el-icon class="el-icon--upload"><upload-filled /></el-icon>
-              <div class="el-upload__text">
-                <em>上传热更文件</em>
+        <el-form-item label="热更文件" prop="hotFile">
+          <el-upload
+            ref="uploadfileRef"
+            class="upload-wrapper"
+            :limit="1"
+            :auto-upload="false"
+            action="#"
+            :on-change="handleFileChange"
+            drag
+          >
+            <el-icon class="el-icon--upload"><upload-filled /></el-icon>
+            <div class="el-upload__text">
+              <em>上传热更文件</em>
+            </div>
+            <template #tip>
+              <div class="el-upload__tip">
+                zip files with a size less than 5M
               </div>
-              <template #tip>
-                <div class="el-upload__tip">
-                  zip files with a size less than 5M
-                </div>
-              </template>
-            </el-upload>
-          </el-form-item>
-        </template>
-      </el-form>
-    </el-drawer>
-  </div>
+            </template>
+          </el-upload>
+        </el-form-item>
+      </template>
+    </el-form>
+  </el-drawer>
 </template>
 
 <script setup lang="ts">
