@@ -1,6 +1,5 @@
 import request from "@/utils/request";
 import { type APIResponse, ResponseList } from "../types/common";
-import internal from "stream";
 
 class GmRankApi {
   static getRankList(data: any) {
@@ -61,12 +60,13 @@ export interface RankOpenForm {
   rankName?: string; // 排行榜名称
   startTime: string; // 开始时间
   endTime: string; // 结束时间
+  closeTime: string; // 榜单关闭时间
   rewardList: RankRewardForm[];
 }
 
 export interface RankRewardForm {
   id: number; // 唯一id
-  rankId: number; // 排行榜id
+  openId: number; // 排行榜id
   rank: number; // 排名
   rewards: RankReward[]; // 奖励配置
 }

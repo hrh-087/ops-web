@@ -401,6 +401,7 @@ const enterDialog = () => {
               return;
             }
           }
+
           GameUpdateApi.createGameUpdate(form.value).then((res: any) => {
             ElMessage({
               type: "success",
@@ -408,6 +409,11 @@ const enterDialog = () => {
             });
             getTableData();
             closeDialog();
+            console.log("res:", res);
+            router.push({
+              name: "game-update-info",
+              params: { id: res.data.id },
+            });
           });
           break;
         }

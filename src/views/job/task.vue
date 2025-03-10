@@ -58,7 +58,7 @@
           :percentage="((completed + faild) / jobInfo.tasks.length) * 100"
           class="mt-2"
           :status="
-            completed + faild === jobInfo.tasks.length ? 'success' : 'active'
+            completed + faild === jobInfo.tasks.length ? 'success' : 'warning'
           "
         />
       </p>
@@ -163,10 +163,10 @@ const getTaskResult = (row: any) => {
     asynqId: row.asynqId,
   }).then((res: any) => {
     output.value = res.data.taskResult;
-    console.log("output:", output.value);
+    // console.log("output:", output.value);
   });
 };
-const getRowClass = ({ row }) => {
+const getRowClass = (row: any) => {
   return row.status === 2 ? "row-success" : "row-failure";
 };
 

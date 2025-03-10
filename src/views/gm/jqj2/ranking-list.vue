@@ -36,13 +36,14 @@
           label="id"
           min-width="120"
           prop="id"
-          sortable=""
+          sortable
         />
         <el-table-column
           align="left"
           label="榜单id"
           min-width="120"
           prop="rankId"
+          sortable
         />
 
         <el-table-column
@@ -73,6 +74,13 @@
           prop="endTime"
         />
 
+        <el-table-column
+          align="left"
+          label="榜单关闭时间"
+          min-width="120"
+          prop="closeTime"
+        />
+
         <!-- <el-table-column align="left" label="状态" min-width="120" prop="type">
           <template #default="scope">
             <el-tag :type="scope.row.rankType == 1 ? 'primary' : 'warning'">
@@ -98,12 +106,18 @@
         :before-close="closeTablelog"
       >
         <el-table :data="rankingData">
-          <el-table-column property="id" label="id" width="80" />
-          <el-table-column property="rankId" label="榜单id" width="120" />
+          <el-table-column property="id" label="id" width="80" sortable />
+          <el-table-column
+            property="rankId"
+            label="榜单id"
+            width="120"
+            sortable
+          />
           <el-table-column property="rankName" label="榜单名称" width="200" />
           <el-table-column property="showCount" label="展示数量" width="200" />
           <el-table-column property="startTime" label="开始时间" width="200" />
           <el-table-column property="endTime" label="结束时间" width="200" />
+          <el-table-column property="closeTime" label="结束时间" width="200" />
           <el-table-column property="rewardList" label="榜单奖励">
             <template #default="scope">
               <el-tooltip placement="bottom" effect="light">
@@ -117,8 +131,8 @@
                     >
                       <el-table-column property="id" label="ID" width="120" />
                       <el-table-column
-                        property="rankId"
-                        label="榜单id"
+                        property="openId"
+                        label="榜单配置唯一id"
                         width="120"
                       />
                       <el-table-column
@@ -178,6 +192,9 @@
           label-width="120px"
           label-position="top"
         >
+          <el-form-item label="榜单唯一id">
+            <el-input v-model="form.id" autocomplete="off" disabled />
+          </el-form-item>
           <el-form-item label="榜单id">
             <el-input v-model="form.rankId" autocomplete="off" disabled />
           </el-form-item>
@@ -231,9 +248,15 @@
                 </template>
               </el-table-column>
 
-              <el-table-column align="left" prop="rankId" label="榜单id">
+              <el-table-column align="left" prop="openId" label="榜单唯一id">
                 <template #default="scope">
-                  <el-input v-model="scope.row.rankId" disabled />
+                  <el-input v-model="scope.row.openId" disabled />
+                </template>
+              </el-table-column>
+
+              <el-table-column align="left" prop="openId" label="榜单id">
+                <template #default>
+                  <el-input v-model="form.rankId" disabled />
                 </template>
               </el-table-column>
 
@@ -376,7 +399,7 @@ const addaward = (id: number, rankId: number) => {
   }
   form.value.rewardList.push({
     id: id,
-    rankId: rankId,
+    openId: rankId,
     rank: 0,
     rewards: [],
   });
@@ -453,6 +476,7 @@ const form = ref<RankOpenForm>({
   showCount: 0,
   startTime: "",
   endTime: "",
+  closeTime: "",
   rewardList: [],
 });
 const rankingForm = ref();
@@ -467,6 +491,7 @@ const initForm = () => {
     showCount: 0,
     startTime: "",
     endTime: "",
+    closeTime: "",
     rewardList: [],
   };
 };
@@ -509,6 +534,7 @@ const handleParsedData = (data: Record<string, []>) => {
       rankName: item.rankName,
       startTime: item.startTime,
       endTime: item.endTime,
+      closeTime: item.closeTime,
       rewardList: [],
     })
   );
@@ -516,7 +542,7 @@ const handleParsedData = (data: Record<string, []>) => {
   for (const item of data["reward"] as RankRewardForm[]) {
     for (const item2 of rankingData.value) {
       try {
-        if (item.rankId === item2.rankId) {
+        if (item.openId === item2.id) {
           let rankReward: RankReward[] = [];
 
           // 如果奖励为空，则忽略
@@ -536,7 +562,7 @@ const handleParsedData = (data: Record<string, []>) => {
           // 追加奖励参数
           item2.rewardList.push({
             id: item.id,
-            rankId: item.rankId,
+            openId: item.openId,
             rank: item.rank,
             rewards: rankReward,
           });

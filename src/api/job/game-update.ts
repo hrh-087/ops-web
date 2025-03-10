@@ -48,6 +48,13 @@ class GameUpdateApi {
       data: data,
     });
   }
+
+  static getGameSvnConfigInfo() {
+    return request<any, APIResponse<object>>({
+      url: "/job/gameUpdate/svnInfo/",
+      method: "post",
+    });
+  }
 }
 
 export default GameUpdateApi;
