@@ -67,7 +67,7 @@ export interface RankOpenForm {
 export interface RankRewardForm {
   id: number; // 唯一id
   openId: number; // 排行榜id
-  rank: number; // 排名
+  rank: string; // 排名
   rewards: RankReward[]; // 奖励配置
 }
 

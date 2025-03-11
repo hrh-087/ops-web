@@ -400,7 +400,7 @@ const addaward = (id: number, rankId: number) => {
   form.value.rewardList.push({
     id: id,
     openId: rankId,
-    rank: 0,
+    rank: "",
     rewards: [],
   });
 };
@@ -563,7 +563,7 @@ const handleParsedData = (data: Record<string, []>) => {
           item2.rewardList.push({
             id: item.id,
             openId: item.openId,
-            rank: item.rank,
+            rank: item.rank.toString(),
             rewards: rankReward,
           });
         }

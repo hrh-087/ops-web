@@ -61,7 +61,7 @@
                 </p>
                 <p><strong>热更服务:</strong></p>
                 <p
-                  v-for="item in hotUpdateObjInfo"
+                  v-for="item in hotUpdateObjInfo as GameServer[]"
                   :key="item.ID"
                   style="color: red"
                 >
@@ -132,7 +132,7 @@
 <script setup lang="ts">
 import GameUpdateApi, { GameUpdateForm } from "@/api/job/game-update";
 import GameTypeApi from "@/api/game/gameType";
-import GameServerApi from "@/api/game/gameServer";
+import GameServerApi, { type GameServer } from "@/api/game/gameServer";
 
 defineOptions({
   name: "GameUpdateInfo",
