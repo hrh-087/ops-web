@@ -25,6 +25,14 @@ class GmRankApi {
       data,
     });
   }
+
+  static updateGameConfig(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/gm/uploadGameConfig/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default GmRankApi;
