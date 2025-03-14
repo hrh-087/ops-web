@@ -1,7 +1,7 @@
 import request from "@/utils/request";
 import { type APIResponse, ResponseList } from "./types/common";
 
-class UploadFileApi {
+class BaseApi {
   static uploadFile(formData: FormData) {
     return request<any, APIResponse<any>>({
       url: "/base/uploadFile/",
@@ -12,6 +12,15 @@ class UploadFileApi {
       },
     });
   }
+
+  static downloadExcel(data: any) {
+    return request<any, APIResponse<any>>({
+      url: "/base/generateExcel/",
+      method: "get",
+      params: data,
+      responseType: "blob",
+    });
+  }
 }
 
-export default UploadFileApi;
+export default BaseApi;

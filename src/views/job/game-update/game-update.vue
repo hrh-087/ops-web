@@ -197,7 +197,7 @@
 import GameUpdateApi, { GameUpdateForm } from "@/api/job/game-update";
 import GameServerApi, { type GameServer } from "@/api/game/gameServer";
 import GameTypeApi, { type GameType } from "@/api/game/gameType";
-import UploadFileApi from "@/api/base";
+import BaseApi from "@/api/base";
 
 import { UploadFile } from "element-plus";
 
@@ -481,7 +481,7 @@ const postUploadFile = async () => {
     return false;
   }
   let isSucesse = false;
-  await UploadFileApi.uploadFile(formData).then((res: any) => {
+  await BaseApi.uploadFile(formData).then((res: any) => {
     form.value.hotFile = res.data.filePath;
     form.value.sourceHotFile = res.data.sourceFileName;
     isSucesse = true;

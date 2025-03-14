@@ -46,12 +46,19 @@
           sortable
         />
 
-        <el-table-column
-          align="left"
-          label="榜单名称"
-          min-width="120"
-          prop="name"
-        />
+        <el-table-column align="left" label="榜单名称" min-width="120">
+          <template #default="scope">
+            {{ getRankName(scope.row.rankId) }}
+          </template>
+        </el-table-column>
+
+        <el-table-column align="left" label="榜单类型" min-width="120">
+          <template #default="scope">
+            <el-tag>
+              {{ rankingListType[getRankType(scope.row.rankId)] || "无" }}
+            </el-tag>
+          </template>
+        </el-table-column>
 
         <el-table-column
           align="left"
@@ -90,11 +97,11 @@
         </el-table-column> -->
 
         <el-table-column align="left" fixed="right" label="操作" width="300">
-          <template #default="scope">
+          <!-- <template #default="scope">
             <el-button type="primary" link @click="openDialog(scope.row)">
               配置
             </el-button>
-          </template>
+          </template> -->
         </el-table-column>
       </el-table>
 
@@ -113,11 +120,22 @@
             width="120"
             sortable
           />
-          <el-table-column property="rankName" label="榜单名称" width="200" />
-          <el-table-column property="showCount" label="展示数量" width="200" />
+          <el-table-column label="榜单名称" width="200">
+            <template #default="scope">
+              {{ getRankName(scope.row.rankId) }}
+            </template>
+          </el-table-column>
+          <el-table-column label="榜单类型" width="120">
+            <template #default="scope">
+              <el-tag>
+                {{ rankingListType[getRankType(scope.row.rankId)] }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column property="showCount" label="展示数量" width="100" />
           <el-table-column property="startTime" label="开始时间" width="200" />
           <el-table-column property="endTime" label="结束时间" width="200" />
-          <el-table-column property="closeTime" label="结束时间" width="200" />
+          <el-table-column property="closeTime" label="关闭时间" width="200" />
           <el-table-column property="rewardList" label="榜单奖励">
             <template #default="scope">
               <el-tooltip placement="bottom" effect="light">
@@ -125,30 +143,33 @@
                   <div>
                     <el-table
                       :data="scope.row.rewardList"
+                      table-layout="auto"
                       border
-                      height="300"
-                      width="300"
                     >
-                      <el-table-column property="id" label="ID" width="120" />
+                      <el-table-column
+                        property="id"
+                        label="ID"
+                        min-width="60"
+                      />
                       <el-table-column
                         property="openId"
                         label="榜单配置唯一id"
-                        width="120"
+                        min-width="60"
                       />
                       <el-table-column
                         property="rank"
                         label="排名"
-                        width="120"
+                        min-width="60"
                       />
-                      <el-table-column label="奖励" width="120">
+                      <el-table-column label="奖励" min-width="100">
                         <template #default="rewardScope">
                           <el-tag
                             v-for="(reward, index) in rewardScope.row.rewards"
                             :key="index"
                           >
-                            {{ reward.rewardId }}_{{ reward.rewardName }}*{{
-                              reward.rewardNum
-                            }}
+                            {{ reward.rewardId }}_{{
+                              getItemName(reward.rewardId)
+                            }}*{{ reward.rewardNum }}
                           </el-tag>
                         </template>
                       </el-table-column>
@@ -361,6 +382,7 @@ import GmRankApi, {
   RankReward,
 } from "@/api/gm/ranking-list";
 import PlatformApi, { type Platform } from "@/api/game-config/platform";
+import GmBaseApi, { type Rank, Item } from "@/api/gm/base";
 
 defineOptions({ name: "RankingList" });
 
@@ -368,6 +390,8 @@ const rules = {};
 const sheetNames = ["open", "reward"];
 
 const tableData = ref<GmRankList[] | any>([]);
+const itemOptions = ref<Rank[] | any>([]);
+const rankOptions = ref<Item[] | any>([]);
 
 const rankingListType = ref<Record<number, string>>({
   1: "排行榜",
@@ -378,6 +402,13 @@ const platformData = ref<Platform[] | any>([]);
 const serverId = ref<number>();
 const getTableData = () => {
   PlatformApi.getPlatformAll().then((res: any) => {
+    GmBaseApi.getItemList({ itemType: "rank" }).then((res: any) => {
+      rankOptions.value = res.data;
+    });
+    GmBaseApi.getItemList({ itemType: "item" }).then((res: any) => {
+      itemOptions.value = res.data;
+    });
+
     platformData.value = res.data;
   });
 };
@@ -523,8 +554,6 @@ const closeTablelog = () => {
 };
 // 获取excel数据
 const handleParsedData = (data: Record<string, []>) => {
-  console.log("data", data);
-
   // 获取榜单配置参数
   rankingData.value = (data["open"] as RankOpenForm[]).map(
     (item: RankOpenForm) => ({
@@ -618,6 +647,21 @@ const setRankingList = (key: number) => {
     closeDialog();
     closeTablelog();
   });
+};
+
+const getRankName = (id: number) => {
+  const rank = rankOptions.value.find((item: any) => item.rankId === id);
+  return rank ? rank.rankName : "";
+};
+
+const getRankType = (id: number) => {
+  const rank = rankOptions.value.find((item: any) => item.rankId === id);
+  return rank ? rank.rankType : "";
+};
+
+const getItemName = (id: number) => {
+  const item = itemOptions.value.find((item: any) => item.itemId == id);
+  return item ? item.itemName : "";
 };
 
 // const rankingForm = ref<GmRankingList[]>([])

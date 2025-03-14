@@ -13,15 +13,26 @@
       <template #trigger>
         <el-button type="primary">{{ buttonName || "上传文件" }}</el-button>
       </template>
-      <el-button
-        v-if="excelName != ''"
-        type="primary"
-        link
-        style="padding-left: 15px"
-        @click="downloadLocalFile"
-      >
-        下载模板
-      </el-button>
+      <template #default v-if="isDownload()">
+        <el-button
+          v-if="excelType == ''"
+          type="primary"
+          link
+          style="padding-left: 15px"
+          @click="downloadRemoteExcel"
+        >
+          下载模板
+        </el-button>
+        <el-button
+          v-else
+          type="primary"
+          link
+          style="padding-left: 15px"
+          @click="downloadRemoteExcel"
+        >
+          下载模板
+        </el-button>
+      </template>
       <template #tip>
         <div class="el-upload__tip text-red">
           限制上传1个文件(新文件会覆盖旧文件)
@@ -34,6 +45,7 @@
 <script setup lang="ts">
 import * as XLSX from "xlsx";
 import { genFileId } from "element-plus";
+import BaseApi from "@/api/base";
 import type { UploadInstance, UploadProps, UploadRawFile } from "element-plus";
 
 interface ExcelRow {
@@ -51,6 +63,10 @@ const props = defineProps({
     default: () => [],
   },
   excelName: {
+    type: String,
+    default: "",
+  },
+  excelType: {
     type: String,
     default: "",
   },
@@ -144,9 +160,43 @@ const downloadLocalFile = () => {
   const fileUrl = `/excel/${props.excelName}`; // 确保 Excel 文件放在 public/excel 目录下
   const a = document.createElement("a");
   a.href = fileUrl;
-  a.download = "排行榜.xlsx"; // 指定下载时的文件名
+  a.download = props.excelName; // 指定下载时的文件名
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
+};
+
+const downloadRemoteExcel = async () => {
+  try {
+    const response = await BaseApi.downloadExcel({
+      excelType: props.excelType,
+    });
+
+    // 创建 Blob
+    const blob = new Blob([response.data], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+
+    // 创建下载链接
+    const url = window.URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", props.excelName); // 设置文件名
+    document.body.appendChild(link);
+    link.click();
+
+    // 清理 URL 对象
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  } catch (error) {
+    console.error("下载失败", error);
+  }
+};
+
+const isDownload = () => {
+  if (props.excelName != "") {
+    return true;
+  }
+  return false;
 };
 </script>

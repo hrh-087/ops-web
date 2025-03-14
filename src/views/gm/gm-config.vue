@@ -4,6 +4,8 @@
       @on-data-parsed="handleParsedData"
       :sheetNames="sheetNames"
       buttonName="批量导入"
+      excelName="item.xlsx"
+      excel-type="item"
     />
   </div>
 </template>
