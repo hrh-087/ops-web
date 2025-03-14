@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="sticky top-0.5 z-10">
+    <div class="sticky top-0.5 z-10 flex space-x-2">
       <el-input v-model="filterText" class="w-3/5" placeholder="筛选" />
       <el-button class="float-right" type="primary" @click="relation">
         确 定
