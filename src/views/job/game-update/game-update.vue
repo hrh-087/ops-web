@@ -30,13 +30,21 @@
         label="创建时间"
         min-width="120"
         prop="CreatedAt"
-      />
+      >
+        <template #default="scope">
+          {{ formatDate(scope.row.CreatedAt) }}
+        </template>
+      </el-table-column>
       <el-table-column
         align="left"
         label="更新时间"
         min-width="120"
         prop="UpdatedAt"
-      />
+      >
+        <template #default="scope">
+          {{ formatDate(scope.row.UpdatedAt) }}
+        </template>
+      </el-table-column>
 
       <el-table-column align="left" fixed="right" label="操作" width="300">
         <template #default="scope">
@@ -198,6 +206,7 @@ import GameUpdateApi, { GameUpdateForm } from "@/api/job/game-update";
 import GameServerApi, { type GameServer } from "@/api/game/gameServer";
 import GameTypeApi, { type GameType } from "@/api/game/gameType";
 import BaseApi from "@/api/base";
+import { formatDate } from "@/utils/format";
 
 import { UploadFile } from "element-plus";
 
