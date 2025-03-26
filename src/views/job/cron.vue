@@ -18,7 +18,13 @@
         label="任务名称"
         min-width="200"
         prop="name"
-      />
+      >
+        <template #default="scope">
+          <el-button link @click="getCronTaskInfo(scope.row)">
+            {{ scope.row.name }}
+          </el-button>
+        </template>
+      </el-table-column>
 
       <el-table-column
         align="left"
@@ -393,7 +399,7 @@ const execCronTask = () => {
   });
 };
 
-const getInfo = (row: any) => {
+const getCronTaskInfo = (row: any) => {
   router.push({
     name: "cron-task-info",
     params: {

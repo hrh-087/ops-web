@@ -5,28 +5,28 @@
       <el-row :gutter="20">
         <el-col :span="8">
           <p>
-            <strong>作业ID:</strong>
-            {{ jobInfo.jobId }}
+            <strong>任务ID:</strong>
+            {{ cronTaskInfo.cronTaskId }}
           </p>
           <p>
             <strong>创建人:</strong>
-            {{ jobInfo.creator }}
+            {{ cronTaskInfo.creator }}
           </p>
           <p>
             <strong>任务类型:</strong>
-            {{ jobInfo.type }}
+            <el-tag>{{ cronTaskType[cronTaskInfo.type] }}</el-tag>
           </p>
           <p>
             <strong>任务状态:</strong>
-            <el-tag :type="jobInfo.status == 3 ? 'danger' : 'primary'">
-              {{ status }}
+            <el-tag :type="cronTaskInfo.status == 1 ? 'success' : 'info'">
+              {{ cronTaskStatus[cronTaskInfo.status] }}
             </el-tag>
           </p>
         </el-col>
         <el-col :span="8">
           <p>
             <strong>任务总数:</strong>
-            {{ jobInfo.tasks.length }}
+            {{ cronTaskInfo.tasks.length }}
           </p>
           <p>
             <strong>完成的任务数:</strong>
@@ -43,27 +43,25 @@
         </el-col>
         <el-col :span="8">
           <p>
-            <strong>总耗时:</strong>
-            {{ jobInfo.execTime }}
+            <strong>创建时间:</strong>
+            {{ formatDate(cronTaskInfo.createdAt) }}
           </p>
           <p>
-            <strong>创建时间:</strong>
-            {{ formatDate(jobInfo.createAt) }}
+            <strong>最后更新时间:</strong>
+            {{ formatDate(cronTaskInfo.updatedAt) }}
+          </p>
+          <p>
+            <strong>执行规则:</strong>
+            <el-tag>
+              {{
+                cronTaskInfo.type == 2
+                  ? cronTaskInfo.cronRule
+                  : formatDate(cronTaskInfo.execTime)
+              }}
+            </el-tag>
           </p>
         </el-col>
       </el-row>
-      <p>
-        <strong>任务进度:</strong>
-        <el-progress
-          :text-inside="true"
-          :stroke-width="18"
-          :percentage="((completed + faild) / jobInfo.tasks.length) * 100"
-          class="mt-2"
-          :status="
-            completed + faild === jobInfo.tasks.length ? 'success' : 'warning'
-          "
-        />
-      </p>
     </el-card>
 
     <!-- 单个卡片展示任务进度表和任务输出 -->
@@ -73,9 +71,9 @@
         <el-col :span="12">
           <div class="header">任务列表:</div>
           <el-table
-            :data="subTaskList"
+            :data="jobTaskList"
             border
-            height="800px"
+            height="400px"
             style="width: 100%"
             :row-class-name="getRowClass"
             @row-click="getTaskResult"
@@ -95,7 +93,21 @@
               </template>
             </el-table-column>
             <el-table-column prop="execTime" label="耗时(s)" width="120" />
+            <el-table-column prop="createAt" label="创建时间" width="180">
+              <template #default="scope">
+                {{ formatDate(scope.row.createAt) }}
+              </template>
+            </el-table-column>
           </el-table>
+
+          <!-- <el-pagination
+              :current-page="page"
+              :page-size="pageSize"
+              :total="total"
+              background
+              layout="prev, pager, next"
+              @current-change="getCronTaskInfo"
+            /> -->
 
           <el-pagination
             class="ops-pagination"
@@ -104,6 +116,7 @@
             :page-sizes="[5, 10, 20]"
             :total="total"
             layout="total, sizes, prev, pager, next, jumper"
+            background
             @current-change="handleCurrentChange"
             @size-change="handleSizeChange"
           />
@@ -111,8 +124,10 @@
 
         <!-- 右侧：任务输出 -->
         <el-col :span="12">
-          <div class="header">当前任务:</div>
-          <p>{{ currentServer }}</p>
+          <div class="header">
+            当前任务:
+            <el-tag>{{ currentServer }}</el-tag>
+          </div>
           <el-divider />
           <p class="header">控制台:</p>
           <pre class="output">{{ output }}</pre>
@@ -123,69 +138,98 @@
 </template>
 
 <script setup lang="ts">
-import JobApi from "@/api/job/job";
+import CronTaskApi, { type CronTask } from "@/api/job/cron";
 import TaskApi from "@/api/job/task";
 import { formatDate } from "@/utils/format";
 
-defineOptions({ name: "Task" });
+defineOptions({
+  name: "CronTaskInfo",
+});
 
 const route = useRoute();
 
-const jobId = ref(route.params.jobId);
+const cronTaskId = ref(route.params.cronTaskId);
 
 const page = ref(1);
 const pageSize = ref(5);
 const total = ref(0);
 const searchInfo = ref({});
-const jobInfo = ref({
-  jobId: "",
-  name: "",
-  type: "",
-  tasks: [],
-  status: 0,
+
+const cronTaskInfo = ref<CronTask>({
+  createdAt: "",
   creator: "",
-  createAt: "",
-  execTime: 0,
-});
-const jobStatus = ref<Record<number, string>>({
-  0: "待执行",
-  1: "执行中",
-  2: "执行成功",
-  3: "执行失败",
+  cronRule: "",
+  cronTaskId: "",
+  describe: "",
+  execTime: "",
+  name: "",
+  projectId: 0,
+  status: 0,
+  taskId: "",
+  tasks: [],
+  taskTypeName: "",
+  type: 0,
+  updatedAt: "",
 });
 
-const getJobInfo = () => {
-  JobApi.getJobById({
-    jobId: jobId.value,
-  }).then((res: any) => {
-    jobInfo.value = res.data;
+const jobTaskList = ref([]);
 
-    // 检测任务状态为完成的时候清除定时器
-    if (jobInfo.value.status === 2 || jobInfo.value.status === 3) {
-      clearInterval(timer);
-    }
+const cronTaskStatus = ref<Record<number, string>>({
+  1: "已开启",
+  2: "已关闭",
+});
+
+const cronTaskType = ref<Record<number, string>>({
+  2: "周期性任务",
+  1: "一次性任务",
+});
+
+const getCronTaskInfo = () => {
+  CronTaskApi.getCronTaskById(cronTaskId.value).then((res: any) => {
+    TaskApi.getTaskList({
+      page: page.value,
+      pageSize: pageSize.value,
+      jobId: cronTaskId.value,
+    }).then((res) => {
+      jobTaskList.value = res.data.rows;
+      total.value = res.data.total;
+      page.value = res.data.page;
+      pageSize.value = res.data.pageSize;
+    });
+
+    cronTaskInfo.value = res.data;
   });
 };
 
-const subTaskList = ref([]);
-const getSubTaskList = () => {
-  TaskApi.getTaskList({
-    page: page.value,
-    pageSize: pageSize.value,
-    jobId: jobId.value,
-  }).then((res: any) => {
-    subTaskList.value = res.data.rows;
-    total.value = res.data.total;
-    page.value = res.data.page;
-    pageSize.value = res.data.pageSize;
-  });
-};
-
-getJobInfo();
-getSubTaskList();
+getCronTaskInfo();
 
 const currentServer = ref("");
 const output = ref("");
+
+// 定义计算属性
+const completed = computed(() => {
+  return cronTaskInfo.value.tasks.filter((item: any) => {
+    if (item.status === "completed") {
+      return true;
+    }
+  }).length;
+});
+
+const pending = computed(() => {
+  return cronTaskInfo.value.tasks.filter((item: any) => {
+    if (item.status === "pending") {
+      return true;
+    }
+  }).length;
+});
+
+const faild = computed(() => {
+  return cronTaskInfo.value.tasks.filter((item: any) => {
+    if (item.status === "archived") {
+      return true;
+    }
+  }).length;
+});
 
 const getTaskResult = (row: any) => {
   currentServer.value = row.taskId;
@@ -196,59 +240,20 @@ const getTaskResult = (row: any) => {
     // console.log("output:", output.value);
   });
 };
+
 const getRowClass = (row: any) => {
   return row.status === 2 ? "row-success" : "row-failure";
 };
 
-// 销毁组件的时候停止定时器
-onBeforeUnmount(() => {
-  clearInterval(timer);
-});
-
-// 定义一个定时器，当任务未完成时每3秒获取一次任务信息
-const timer = setInterval(() => {
-  getJobInfo();
-}, 3000);
-
-// 定义计算属性
-const completed = computed(() => {
-  return jobInfo.value.tasks.filter((item: any) => {
-    if (item.status === "completed") {
-      return true;
-    }
-  }).length;
-});
-
-const pending = computed(() => {
-  return jobInfo.value.tasks.filter((item: any) => {
-    if (item.status === "pending") {
-      return true;
-    }
-  }).length;
-});
-
-const faild = computed(() => {
-  return jobInfo.value.tasks.filter((item: any) => {
-    if (item.status === "archived") {
-      return true;
-    }
-  }).length;
-});
-
-const status = computed(() => {
-  const statusNum = jobInfo.value?.status;
-  return typeof statusNum === "number" ? jobStatus.value[statusNum] : "";
-});
-
 // 分页
 const handleSizeChange = (val: number) => {
   pageSize.value = val;
-  getSubTaskList();
+  getCronTaskInfo();
 };
 
 const handleCurrentChange = (val: number) => {
   page.value = val;
-  getSubTaskList();
+  getCronTaskInfo();
 };
 </script>
 
