@@ -75,7 +75,7 @@
           <el-table
             :data="subTaskList"
             border
-            height="800px"
+            height="400px"
             style="width: 100%"
             :row-class-name="getRowClass"
             @row-click="getTaskResult"
@@ -111,8 +111,7 @@
 
         <!-- 右侧：任务输出 -->
         <el-col :span="12">
-          <div class="header">当前任务:</div>
-          <p>{{ currentServer }}</p>
+          <div class="header">当前任务: {{ currentServer }}</div>
           <el-divider />
           <p class="header">控制台:</p>
           <pre class="output">{{ output }}</pre>
