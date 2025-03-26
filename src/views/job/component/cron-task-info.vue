@@ -9,6 +9,10 @@
             {{ cronTaskInfo.cronTaskId }}
           </p>
           <p>
+            <strong>任务名称:</strong>
+            {{ cronTaskInfo.name }}
+          </p>
+          <p>
             <strong>创建人:</strong>
             {{ cronTaskInfo.creator }}
           </p>
