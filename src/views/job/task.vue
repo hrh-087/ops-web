@@ -207,6 +207,7 @@ onBeforeUnmount(() => {
 // 定义一个定时器，当任务未完成时每3秒获取一次任务信息
 const timer = setInterval(() => {
   getJobInfo();
+  getSubTaskList();
 }, 3000);
 
 // 定义计算属性

@@ -26,6 +26,12 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="left" label="是否为测试项目" min-width="120">
+        <template #default="scope">
+          <el-switch v-model="scope.row.isTest" disabled />
+        </template>
+      </el-table-column>
+
       <el-table-column align="left" fixed="right" label="操作" width="300">
         <template #default="scope">
           <el-button
@@ -111,6 +117,14 @@
         <el-form-item label="客户端json仓库路径" prop="clientSvnUrl">
           <el-input v-model.trim="form.clientSvnUrl" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="客户端json仓库路径" prop="clientSvnUrl">
+          <el-switch v-model="form.isTest" />
+        </el-form-item>
+        <template v-if="form.isTest">
+          <el-form-item label="webHook地址" prop="webHook">
+            <el-input v-model.trim="form.webHook" autocomplete="off" />
+          </el-form-item>
+        </template>
       </el-form>
     </el-drawer>
   </div>
@@ -172,6 +186,8 @@ const form = ref({
   gatewayUrl: "",
   clientConfigDir: "",
   clientSvnUrl: "",
+  isTest: false,
+  webHook: "",
 });
 const initForm = () => {
   if (projectForm.value) {
@@ -185,6 +201,8 @@ const initForm = () => {
     gatewayUrl: "",
     clientConfigDir: "",
     clientSvnUrl: "",
+    isTest: false,
+    webHook: "",
   };
 };
 
