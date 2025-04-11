@@ -111,13 +111,13 @@
         <el-form-item label="网关地址" prop="gatewayUrl">
           <el-input v-model.trim="form.gatewayUrl" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="客户端json文件目录" prop="clientConfigDir">
+        <!-- <el-form-item label="客户端json文件目录" prop="clientConfigDir">
           <el-input v-model.trim="form.clientConfigDir" autocomplete="off" />
         </el-form-item>
         <el-form-item label="客户端json仓库路径" prop="clientSvnUrl">
           <el-input v-model.trim="form.clientSvnUrl" autocomplete="off" />
-        </el-form-item>
-        <el-form-item label="客户端json仓库路径" prop="clientSvnUrl">
+        </el-form-item> -->
+        <el-form-item label="是否为测试项目" prop="clientSvnUrl">
           <el-switch v-model="form.isTest" />
         </el-form-item>
         <template v-if="form.isTest">
@@ -149,12 +149,12 @@ const rules = ref({
   svnUrl: [{ required: true, message: "请输入svn地址", trigger: "blur" }],
   gmUrl: [{ required: true, message: "请输入gm地址", trigger: "blur" }],
   gatewayUrl: [{ required: true, message: "请输入网关地址", trigger: "blur" }],
-  clientConfigDir: [
-    { required: true, message: "请输入客户端json文件目录", trigger: "blur" },
-  ],
-  clientSvnUrl: [
-    { required: true, message: "请输入客户端svn地址", trigger: "blur" },
-  ],
+  // clientConfigDir: [
+  //   { required: true, message: "请输入客户端json文件目录", trigger: "blur" },
+  // ],
+  // clientSvnUrl: [
+  //   { required: true, message: "请输入客户端svn地址", trigger: "blur" },
+  // ],
 });
 
 const projectStatus = ref<Record<number, string>>({
