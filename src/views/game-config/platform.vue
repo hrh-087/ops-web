@@ -101,7 +101,7 @@
           ref="platformForm"
           :model="form"
           :rules="rules"
-          label-width="80px"
+          label-width="auto"
         >
           <el-form-item
             label="渠道名称"
@@ -156,6 +156,19 @@
           </el-form-item>
 
           <el-form-item
+            label="网关地址"
+            prop="gatewayUrl"
+            style="width: 70%"
+            required
+          >
+            <el-input v-model="form.gatewayUrl" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item label="gm地址" prop="gmUrl" style="width: 70%">
+            <el-input v-model="form.gmUrl" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
             label="日志组ID"
             prop="ltsLogGroupId"
             style="width: 70%"
@@ -171,17 +184,36 @@
             <el-input v-model="form.ltsLogStreamId" autocomplete="off" />
           </el-form-item>
 
-          <el-form-item label="gm地址" prop="gmUrl" style="width: 70%">
-            <el-input v-model="form.gmUrl" autocomplete="off" />
+          <el-form-item
+            label="LTS云区域id"
+            prop="cloudRegionId"
+            style="width: 70%"
+          >
+            <el-input v-model="form.cloudRegionId" autocomplete="off" />
           </el-form-item>
 
           <el-form-item
-            label="网关地址"
-            prop="gatewayUrl"
+            label="LTS云区域项目id"
+            prop="cloudProjectId"
             style="width: 70%"
-            required
           >
-            <el-input v-model="form.gatewayUrl" autocomplete="off" />
+            <el-input v-model="form.cloudProjectId" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            label="LTS云区域SecretKey"
+            prop="cloudSecretKey"
+            style="width: 70%"
+          >
+            <el-input v-model="form.cloudSecretKey" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            label="LTS云SecretId"
+            prop="cloudSecretId"
+            style="width: 70%"
+          >
+            <el-input v-model="form.cloudSecretId" autocomplete="off" />
           </el-form-item>
 
           <el-form-item
@@ -248,6 +280,10 @@ const form = ref<Platform>({
   gmUrl: "",
   ltsLogGroupId: "",
   ltsLogStreamId: "",
+  cloudRegionId: "",
+  cloudProjectId: "",
+  cloudSecretId: "",
+  cloudSecretKey: "",
 });
 
 const initForm = () => {
@@ -264,6 +300,10 @@ const initForm = () => {
     gmUrl: "",
     ltsLogGroupId: "",
     ltsLogStreamId: "",
+    cloudRegionId: "",
+    cloudProjectId: "",
+    cloudSecretId: "",
+    cloudSecretKey: "",
   };
 };
 

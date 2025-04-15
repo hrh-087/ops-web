@@ -67,8 +67,14 @@ export interface Platform {
   projectId?: number;
   imageTag: string;
   imageUri: string;
+
   ltsLogGroupId: string;
   ltsLogStreamId: string;
+  cloudRegionId: string;
+  cloudProjectId: string;
+  cloudSecretId: string;
+  cloudSecretKey: string;
+
   gmUrl: string;
   gatewayUrl: string;
   [property: string]: any;

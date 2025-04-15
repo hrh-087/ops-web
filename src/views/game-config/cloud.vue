@@ -164,19 +164,6 @@
             />
           </el-form-item>
 
-          <el-form-item
-            label="区域项目ID"
-            prop="cloudProjectId"
-            style="width: 70%"
-            required
-          >
-            <el-input
-              v-model="form.cloudProjectId"
-              autocomplete="off"
-              placeholder="cloudProjectId"
-            />
-          </el-form-item>
-
           <el-form-item label="是否为云商" prop="isCloud" style="width: 70%">
             <el-switch v-model="form.isCloud" />
           </el-form-item>
@@ -227,7 +214,6 @@ const form = ref({
   secretId: "",
   secretKey: "",
   isCloud: true,
-  cloudProjectId: "",
 });
 
 const initForm = () => {
@@ -241,7 +227,6 @@ const initForm = () => {
     secretId: "",
     secretKey: "",
     isCloud: true,
-    cloudProjectId: " ",
   };
 };
 
