@@ -105,12 +105,12 @@
         <el-form-item label="json仓库路径" prop="svnUrl">
           <el-input v-model.trim="form.svnUrl" autocomplete="off" />
         </el-form-item>
-        <el-form-item label="gm地址" prop="gmUrl">
+        <!-- <el-form-item label="gm地址" prop="gmUrl">
           <el-input v-model.trim="form.gmUrl" autocomplete="off" />
         </el-form-item>
         <el-form-item label="网关地址" prop="gatewayUrl">
           <el-input v-model.trim="form.gatewayUrl" autocomplete="off" />
-        </el-form-item>
+        </el-form-item> -->
         <!-- <el-form-item label="客户端json文件目录" prop="clientConfigDir">
           <el-input v-model.trim="form.clientConfigDir" autocomplete="off" />
         </el-form-item>
@@ -147,8 +147,8 @@ const rules = ref({
     { required: true, message: "请输入json文件目录", trigger: "blur" },
   ],
   svnUrl: [{ required: true, message: "请输入svn地址", trigger: "blur" }],
-  gmUrl: [{ required: true, message: "请输入gm地址", trigger: "blur" }],
-  gatewayUrl: [{ required: true, message: "请输入网关地址", trigger: "blur" }],
+  // gmUrl: [{ required: true, message: "请输入gm地址", trigger: "blur" }],
+  // gatewayUrl: [{ required: true, message: "请输入网关地址", trigger: "blur" }],
   // clientConfigDir: [
   //   { required: true, message: "请输入客户端json文件目录", trigger: "blur" },
   // ],

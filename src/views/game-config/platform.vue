@@ -156,6 +156,35 @@
           </el-form-item>
 
           <el-form-item
+            label="日志组ID"
+            prop="ltsLogGroupId"
+            style="width: 70%"
+          >
+            <el-input v-model="form.ltsLogGroupId" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            label="日志流ID"
+            prop="ltsLogStreamId"
+            style="width: 70%"
+          >
+            <el-input v-model="form.ltsLogStreamId" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item label="gm地址" prop="gmUrl" style="width: 70%">
+            <el-input v-model="form.gmUrl" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            label="网关地址"
+            prop="gatewayUrl"
+            style="width: 70%"
+            required
+          >
+            <el-input v-model="form.gatewayUrl" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
             label="渠道描述"
             prop="platformDescribe"
             style="width: 70%"
@@ -215,6 +244,10 @@ const form = ref<Platform>({
   platformDescribe: "",
   imageTag: "",
   imageUri: "",
+  gatewayUrl: "",
+  gmUrl: "",
+  ltsLogGroupId: "",
+  ltsLogStreamId: "",
 });
 
 const initForm = () => {
@@ -227,6 +260,10 @@ const initForm = () => {
     platformDescribe: "",
     imageTag: "",
     imageUri: "",
+    gatewayUrl: "",
+    gmUrl: "",
+    ltsLogGroupId: "",
+    ltsLogStreamId: "",
   };
 };
 

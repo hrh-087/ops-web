@@ -67,5 +67,9 @@ export interface Platform {
   projectId?: number;
   imageTag: string;
   imageUri: string;
+  ltsLogGroupId: string;
+  ltsLogStreamId: string;
+  gmUrl: string;
+  gatewayUrl: string;
   [property: string]: any;
 }
