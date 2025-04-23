@@ -203,7 +203,7 @@ const batchObjName = computed(() => {
     case "2":
       return objList.map((item: any) => item.platformName).join(",");
     default:
-      return "1111";
+      return "";
   }
 });
 
