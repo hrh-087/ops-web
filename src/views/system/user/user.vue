@@ -479,10 +479,10 @@ const handleCurrentChange = (val: number) => {
 // 设置角色id组
 const setAuthorityIds = () => {
   tableData.value &&
-    tableData.value.forEach((user: any) => {
-      user.authorityIds =
-        user.authorities &&
-        user.authorities.map((i: any) => {
+    tableData.value.forEach((project: any) => {
+      project.authorityIds =
+        project.authorities &&
+        project.authorities.map((i: any) => {
           return i.authorityId;
         });
     });

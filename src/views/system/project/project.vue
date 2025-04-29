@@ -26,6 +26,36 @@
         </template>
       </el-table-column>
 
+      <el-table-column align="left" label="项目角色" min-width="120">
+        <template #default="scope">
+          <el-cascader
+            v-model="scope.row.authorityIds"
+            :options="authOptions"
+            :show-all-levels="false"
+            collapse-tags
+            :props="{
+              multiple: true,
+              checkStrictly: true,
+              label: 'authorityName',
+              value: 'authorityId',
+              disabled: 'disabled',
+              emitPath: false,
+            }"
+            :clearable="false"
+            @visible-change="
+              (flag) => {
+                changeAuthority(scope.row, flag, 0);
+              }
+            "
+            @remove-tag="
+              (removeAuth) => {
+                changeAuthority(scope.row, false, removeAuth);
+              }
+            "
+          />
+        </template>
+      </el-table-column>
+
       <el-table-column align="left" label="是否为测试项目" min-width="120">
         <template #default="scope">
           <el-switch v-model="scope.row.isTest" disabled />
@@ -132,6 +162,7 @@
 
 <script setup lang="ts">
 import ProjectApi from "@/api/system/project";
+import AuthorityApi from "@/api/system/role";
 
 defineOptions({ name: "Project" });
 
@@ -140,6 +171,7 @@ const page = ref(1);
 const pageSize = ref(10);
 const total = ref(0);
 const searchInfo = ref({});
+const authOptions = ref([]);
 
 const rules = ref({
   projectName: [{ required: true, message: "请输入项目名称", trigger: "blur" }],
@@ -175,7 +207,38 @@ const getTableData = () => {
   });
 };
 
-getTableData();
+const initPage = () => {
+  getTableData();
+  AuthorityApi.getRoleList({ page: 1, pageSize: 999 }).then((res) => {
+    setAuthorityOptions(res.data.rows, authOptions.value);
+  });
+};
+
+initPage();
+
+// 初始化相关
+const setAuthorityOptions = (
+  AuthorityData: never[],
+  optionsData: Array<any>
+) => {
+  AuthorityData?.forEach((item: any) => {
+    if (item.children && item.children.length) {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName,
+        children: [],
+      };
+      setAuthorityOptions(item.children, option.children);
+      optionsData.push(option);
+    } else {
+      const option = {
+        authorityId: item.authorityId,
+        authorityName: item.authorityName,
+      };
+      optionsData.push(option);
+    }
+  });
+};
 
 const projectForm = ref();
 const form = ref({
@@ -314,4 +377,55 @@ const enterDialog = () => {
     }
   });
 };
+
+const tempAuth: any = {};
+// 修改角色
+const changeAuthority = async (row: any, flag: boolean, removeAuth: any) => {
+  if (!row.authorityIds) {
+    row.authorities = [];
+  }
+
+  if (flag) {
+    if (!removeAuth) {
+      tempAuth[row.ID] = [...row.authorityIds];
+    }
+    return;
+  }
+
+  await nextTick();
+  ProjectApi.setProjectAuthority({
+    ID: row.ID,
+    authorityIds: row.authorityIds,
+  })
+    .then(() => {
+      ElMessage({ type: "success", message: "设置成功" });
+    })
+    .catch(() => {
+      if (!removeAuth) {
+        row.authorityIds = [...tempAuth[row.ID]];
+        delete tempAuth[row.ID];
+      } else {
+        row.authorityIds = [removeAuth, ...row.authorityIds];
+      }
+    });
+};
+
+// 设置角色id组
+const setAuthorityIds = () => {
+  tableData.value &&
+    tableData.value.forEach((user: any) => {
+      user.authorityIds =
+        user.authorities &&
+        user.authorities.map((i: any) => {
+          return i.authorityId;
+        });
+    });
+};
+
+watch(
+  () => tableData.value,
+  () => {
+    setAuthorityIds();
+  }
+);
 </script>

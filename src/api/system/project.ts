@@ -65,6 +65,14 @@ class ProjectApi {
     });
   }
 
+  static setProjectAuthority(data: object) {
+    return request<any, APIResponse<object>>({
+      url: "/project/setProjectAuthority/",
+      method: "post",
+      data: data,
+    });
+  }
+
   static initProject(data: object) {
     return request<any, APIResponse<object>>({
       url: "/project/initProject/",
