@@ -2,7 +2,7 @@ FROM node:20.16.0-alpine
   
 WORKDIR /ops_web
 COPY . .
-RUN npm config set registry https://registry.npm.taobao.org
+
 
 RUN npm install -g pnpm
 RUN pnpm install && pnpm run build
