@@ -45,7 +45,10 @@
     <el-card class="mb-3" v-if="lbInfo && lbInfo.listener">
       <template #header>
         <div class="clearfix">
-          <span>监听器信息</span>
+          <span style="padding: 10px">监听器信息</span>
+          <el-button type="danger" @click="clearLbListener">
+            清除监听器
+          </el-button>
         </div>
       </template>
       <template #default>
@@ -90,6 +93,22 @@ const getLbInfo = async () => {
   } catch (error) {
     console.error("Failed to fetch load balancer info:", error);
   }
+};
+
+const clearLbListener = () => {
+  ElMessageBox.confirm("此操作将清除该实例下所有监听器, 是否继续?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "error",
+  }).then(() => {
+    LbApi.clearLbListener(lbInfo.value).then(() => {
+      ElMessage({
+        type: "success",
+        message: "清除成功",
+      });
+      getLbInfo();
+    });
+  });
 };
 
 onBeforeMount(() => {

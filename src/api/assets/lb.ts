@@ -48,6 +48,14 @@ class LbApi {
       method: "post",
     });
   }
+
+  static clearLbListener(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/assets/lb/deleteCloudListener/",
+      method: "post",
+      data: data,
+    });
+  }
 }
 
 export default LbApi;
