@@ -59,16 +59,48 @@
         >
           <el-table-column
             align="left"
+            prop="instanceId"
+            label="实例id"
+            min-width="200"
+          />
+          <el-table-column
+            align="left"
             prop="name"
             label="监听器名称"
             min-width="120"
           />
           <el-table-column
             align="left"
+            prop="port"
+            label="监听器端口"
+            min-width="120"
+          />
+          <el-table-column
+            align="left"
+            prop="name"
+            label="后端服务器ip"
+            min-width="120"
+          >
+            <template #default="scope">
+              {{ scope.row.backendIp }}:{{ scope.row.backendPort }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            align="left"
             prop="protocol"
             label="协议"
             min-width="120"
           />
+          <el-table-column
+            align="left"
+            prop="name"
+            label="创建时间"
+            min-width="120"
+          >
+            <template #default="scope">
+              {{ formatDate(scope.row.CreatedAt) }}
+            </template>
+          </el-table-column>
         </el-table>
       </template>
     </el-card>
@@ -78,6 +110,7 @@
 <script setup lang="ts">
 import LbApi from "@/api/assets/lb";
 import { type Lb } from "@/api/assets/lb";
+import { formatDate } from "@/utils/format";
 
 defineOptions({ name: "LoadbalanceInfo" });
 

@@ -129,6 +129,9 @@
         <el-form-item label="项目名称" prop="projectName">
           <el-input v-model="form.projectName" autocomplete="off" />
         </el-form-item>
+        <el-form-item label="项目代码" prop="projectCode">
+          <el-input v-model="form.projectCode" autocomplete="off" />
+        </el-form-item>
         <el-form-item label="json文件目录" prop="configDir">
           <el-input v-model.trim="form.configDir" autocomplete="off" />
         </el-form-item>
@@ -178,6 +181,7 @@ const rules = ref({
   configDir: [
     { required: true, message: "请输入json文件目录", trigger: "blur" },
   ],
+  projectCode: [{ required: true, message: "请输入项目代码", trigger: "blur" }],
   svnUrl: [{ required: true, message: "请输入svn地址", trigger: "blur" }],
   // gmUrl: [{ required: true, message: "请输入gm地址", trigger: "blur" }],
   // gatewayUrl: [{ required: true, message: "请输入网关地址", trigger: "blur" }],
@@ -243,6 +247,7 @@ const setAuthorityOptions = (
 const projectForm = ref();
 const form = ref({
   projectName: "",
+  projectCode: "",
   configDir: "",
   svnUrl: "",
   gmUrl: "",
@@ -258,6 +263,7 @@ const initForm = () => {
   }
   form.value = {
     projectName: "",
+    projectCode: "",
     configDir: "",
     svnUrl: "",
     gmUrl: "",

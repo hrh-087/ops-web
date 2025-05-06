@@ -82,6 +82,13 @@ class GameServerApi {
       data,
     });
   }
+
+  static generateMonitorFile() {
+    return request<any, APIResponse<object>>({
+      url: "/game/server/generatePrometheusConfig/",
+      method: "post",
+    });
+  }
 }
 
 export default GameServerApi;

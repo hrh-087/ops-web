@@ -64,6 +64,9 @@
         <el-button type="warning" @click="updateGameConfig()">
           更新配置文件
         </el-button>
+        <el-button type="warning" @click="generateMonitorFile()">
+          生成监控文件
+        </el-button>
         <el-button type="danger" @click="rsyncGameConfig()">
           同步配置文件
         </el-button>
@@ -722,6 +725,21 @@ const rsyncGameConfig = () => {
         router.push({ name: "task", params: { jobId: res.data.jobId } });
       }
     );
+  });
+};
+
+const generateMonitorFile = () => {
+  ElMessageBox.confirm("确定生成监控配置文件吗?", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    GameServerApi.generateMonitorFile().then((res: any) => {
+      ElMessage({
+        type: "success",
+        message: "生成成功",
+      });
+    });
   });
 };
 

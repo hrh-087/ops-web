@@ -87,4 +87,5 @@ export default ProjectApi;
 export interface ProjectInfo {
   ID: number;
   projectName: string;
+  projectCode: string;
 }

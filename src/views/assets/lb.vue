@@ -229,7 +229,7 @@ const openDialog = (key: string) => {
         LbApi.writeRedis().then(() => {
           ElMessage({
             type: "success",
-            message: "同步成功",
+            message: "写入成功",
           });
         });
       });
