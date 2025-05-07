@@ -548,7 +548,6 @@ const initForm = () => {
     composeFile: "",
     configFile: "",
   };
-  platformData.value = [];
   gameTypeData.value = [];
   serverData.value = [];
   kafkaData.value = [];
