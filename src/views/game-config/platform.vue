@@ -217,6 +217,28 @@
           </el-form-item>
 
           <el-form-item
+            label="敏感词检测url"
+            prop="filterUrl"
+            style="width: 70%"
+          >
+            <el-input v-model="form.filterUrl" autocomplete="off" />
+          </el-form-item>
+
+          <el-form-item
+            label="敏感词检测Token"
+            prop="filterToken"
+            style="width: 70%"
+          >
+            <el-input
+              type="textarea"
+              :rows="5"
+              v-model="form.filterToken"
+              autocomplete="off"
+              placeholder="敏感词检测Token"
+            />
+          </el-form-item>
+
+          <el-form-item
             label="渠道描述"
             prop="platformDescribe"
             style="width: 70%"
@@ -278,6 +300,8 @@ const form = ref<Platform>({
   imageUri: "",
   gatewayUrl: "",
   gmUrl: "",
+  filterToken: "",
+  filterUrl: "",
   ltsLogGroupId: "",
   ltsLogStreamId: "",
   cloudRegionId: "",
