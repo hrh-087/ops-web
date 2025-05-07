@@ -16,7 +16,7 @@
             v-for="item in platformData"
             :key="item.ID"
             :label="item.platformName"
-            :value="item.ID"
+            :value="Number(item.ID)"
           />
         </el-select>
       </el-form-item>
@@ -228,7 +228,7 @@ const form = ref({
   name: "",
   host: "",
   auth: "",
-  platformId: 0,
+  platformId: "",
 });
 
 const initForm = () => {
@@ -239,7 +239,7 @@ const initForm = () => {
     name: "",
     host: "",
     auth: "",
-    platformId: 0,
+    platformId: "",
   };
 };
 

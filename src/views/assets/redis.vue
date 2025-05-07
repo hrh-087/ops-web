@@ -247,9 +247,9 @@ const onSubmit = () => {
 const form = ref<AssetsRedis | any>({
   name: "",
   host: "",
-  port: 0,
+  port: 6379,
   password: "",
-  platformId: 0,
+  platformId: "",
 });
 
 const initForm = () => {
@@ -259,9 +259,9 @@ const initForm = () => {
   form.value = {
     name: "",
     host: "",
-    port: 0,
+    port: 6379,
     password: "",
-    platformId: 0,
+    platformId: "",
   };
 };
 

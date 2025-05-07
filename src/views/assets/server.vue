@@ -16,7 +16,7 @@
             v-for="item in platformData"
             :key="item.ID"
             :label="item.platformName"
-            :value="item.ID"
+            :value="Number(item.ID)"
           />
         </el-select>
       </el-form-item>
@@ -345,8 +345,8 @@ const form = ref({
   serverName: "",
   pubIp: "",
   privateIp: "",
-  sshPort: "",
-  platformId: 0,
+  sshPort: "22",
+  platformId: "",
   cloudProduceId: "",
   instanceId: "",
   serverType: "",
@@ -360,8 +360,8 @@ const initForm = () => {
     serverName: "",
     pubIp: "",
     privateIp: "",
-    sshPort: "",
-    platformId: 0,
+    sshPort: "22",
+    platformId: "",
     cloudProduceId: "",
     instanceId: "",
     serverType: "",
