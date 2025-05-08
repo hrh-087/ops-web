@@ -50,6 +50,13 @@ class AssetsServerApi {
       params: data,
     });
   }
+
+  static generateMonitorFile() {
+    return request<any, APIResponse<object>>({
+      url: "/assets/server/generatePrometheusHostConfig/",
+      method: "post",
+    });
+  }
 }
 
 export default AssetsServerApi;

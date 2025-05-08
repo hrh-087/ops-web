@@ -34,6 +34,9 @@
       <el-button type="primary" icon="plus" @click="addAssetsServer()">
         新增服务器
       </el-button>
+      <el-button type="warning" @click="generateMonitorFile()">
+        生成监控文件
+      </el-button>
     </div>
 
     <el-table
@@ -279,6 +282,7 @@
 import AssetsServerApi from "@/api/assets/server";
 import PlatformApi, { type Platform } from "@/api/game-config/platform";
 import CloudProduceApi, { type CloudProduce } from "@/api/game-config/cloud";
+import { generateCodeFrame } from "vue/compiler-sfc";
 
 defineOptions({ name: "Server" });
 
@@ -437,6 +441,21 @@ const enterDialog = () => {
 };
 const addAssetsServer = () => {
   openDialog("add");
+};
+
+const generateMonitorFile = () => {
+  ElMessageBox.confirm("是否生成监控文件", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    AssetsServerApi.generateMonitorFile().then(() => {
+      ElMessage({
+        type: "success",
+        message: "生成成功",
+      });
+    });
+  });
 };
 
 const editAssetsServer = (row: any) => {
