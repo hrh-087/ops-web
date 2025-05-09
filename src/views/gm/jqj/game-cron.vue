@@ -107,7 +107,7 @@
               v-for="item in platformData"
               :key="item.platformCode"
               :label="item.platformName"
-              :value="item.platformCode"
+              :value="Number(item.platformCode)"
             />
           </el-select>
         </el-form-item>
@@ -188,7 +188,7 @@ const form = ref<GmCron | any>({
   serverId: "",
   key: "",
   cron: "",
-  activityExtra: {},
+  activityExtra: "",
 });
 const gameActivityCronForm = ref();
 
@@ -200,7 +200,7 @@ const initForm = () => {
     serverId: "",
     key: "",
     cron: "",
-    activityExtra: {},
+    activityExtra: "",
   };
 };
 
