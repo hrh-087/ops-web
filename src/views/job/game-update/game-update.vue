@@ -161,7 +161,7 @@
               :key="item.ID"
               :label="
                 form.serverType == 1
-                  ? `${item.gameType.code}_${item.vmid}`
+                  ? `${item.platform.platformName}_${item.gameType.code}_${item.vmid}`
                   : item.name
               "
               :value="item.ID"
