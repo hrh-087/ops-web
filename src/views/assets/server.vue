@@ -117,6 +117,15 @@
             编辑
           </el-button>
           <el-button
+            v-if="scope.row.hostType == 2"
+            type="primary"
+            link
+            icon="loading"
+            @click="pullCloudInfo(scope.row)"
+          >
+            拉取
+          </el-button>
+          <el-button
             type="primary"
             link
             icon="delete"
@@ -173,15 +182,57 @@
             />
           </el-form-item>
 
-          <el-form-item label="实例ID" prop="instanceId" style="width: 70%">
-            <el-input
-              v-model="form.instanceId"
-              autocomplete="off"
-              placeholder="实例ID"
-            />
+          <el-form-item
+            label="主机类型"
+            prop="hostType"
+            style="width: 70%"
+            required
+          >
+            <el-select
+              v-model.number="form.hostType"
+              placeholder="请选择"
+              style="width: 100%"
+            >
+              <el-option
+                v-for="item in hostTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="Number(item.value)"
+              />
+            </el-select>
           </el-form-item>
 
-          <el-form-item label="外网IP" prop="pubIp" style="width: 70%" required>
+          <template v-if="form.hostType == '2'">
+            <el-form-item label="实例ID" prop="instanceId" style="width: 70%">
+              <el-input
+                v-model="form.instanceId"
+                autocomplete="off"
+                placeholder="实例ID"
+              />
+            </el-form-item>
+
+            <el-form-item
+              label="云商"
+              prop="cloudProduceId"
+              style="width: 70%"
+              required
+            >
+              <el-select
+                v-model.number="form.cloudProduceId"
+                placeholder="请选择"
+                style="width: 100%"
+              >
+                <el-option
+                  v-for="item in cloudProduceData"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-form-item>
+          </template>
+
+          <el-form-item label="外网IP" prop="pubIp" style="width: 70%">
             <el-input
               v-model="form.pubIp"
               autocomplete="off"
@@ -189,12 +240,7 @@
             />
           </el-form-item>
 
-          <el-form-item
-            label="内网IP"
-            prop="privateIp"
-            style="width: 70%"
-            required
-          >
+          <el-form-item label="内网IP" prop="privateIp" style="width: 70%">
             <el-input
               v-model="form.privateIp"
               autocomplete="off"
@@ -234,25 +280,7 @@
               />
             </el-select>
           </el-form-item>
-          <el-form-item
-            label="云商"
-            prop="cloudProduceId"
-            style="width: 70%"
-            required
-          >
-            <el-select
-              v-model.number="form.cloudProduceId"
-              placeholder="请选择"
-              style="width: 100%"
-            >
-              <el-option
-                v-for="item in cloudProduceData"
-                :key="item.ID"
-                :label="item.regionName"
-                :value="item.ID"
-              />
-            </el-select>
-          </el-form-item>
+
           <el-form-item
             label="服务器类型"
             prop="serverType"
@@ -282,7 +310,6 @@
 import AssetsServerApi from "@/api/assets/server";
 import PlatformApi, { type Platform } from "@/api/game-config/platform";
 import CloudProduceApi, { type CloudProduce } from "@/api/game-config/cloud";
-import { generateCodeFrame } from "vue/compiler-sfc";
 
 defineOptions({ name: "Server" });
 
@@ -295,7 +322,9 @@ const searchInfo = ref({
   platformId: "",
 });
 const platformData = ref<Platform[] | any>();
-const cloudProduceData = ref<CloudProduce[] | any>();
+const cloudProduceData = ref<CloudProduce[] | any>([
+  { label: "----", value: 0 },
+]);
 
 const serverStatus = ref<Record<number, string>>({
   0: "待初始化",
@@ -311,12 +340,17 @@ const serverTypeOptions = ref([
   { value: 3, label: "运维后台" },
 ]);
 
+const hostTypeOptions = ref([
+  { value: 1, label: "物理机" },
+  { value: 2, label: "云主机" },
+]);
+
 const rules = {
   serverName: [
     { required: true, message: "请输入服务器名称", trigger: "blur" },
   ],
-  pubIp: [{ required: true, message: "请输入外网地址", trigger: "blur" }],
-  privateIp: [{ required: true, message: "请输入内网地址", trigger: "blur" }],
+  // pubIp: [{ required: true, message: "请输入外网地址", trigger: "blur" }],
+  // privateIp: [{ required: true, message: "请输入内网地址", trigger: "blur" }],
   sshPort: [{ required: true, message: "请输入ssh端口", trigger: "blur" }],
   platformId: [{ required: true, message: "请选择渠道组", trigger: "blur" }],
   serverType: [
@@ -351,9 +385,10 @@ const form = ref({
   privateIp: "",
   sshPort: "22",
   platformId: "",
-  cloudProduceId: "",
+  cloudProduceId: 0,
   instanceId: "",
   serverType: "",
+  hostType: "",
 });
 
 const initForm = () => {
@@ -366,10 +401,13 @@ const initForm = () => {
     privateIp: "",
     sshPort: "22",
     platformId: "",
-    cloudProduceId: "",
+    cloudProduceId: 0,
     instanceId: "",
     serverType: "",
+    hostType: "",
   };
+
+  cloudProduceData.value = [{ label: "----", value: 0 }];
 };
 
 const dialogTitle = ref("");
@@ -384,7 +422,13 @@ const openDialog = (key: string) => {
 
   // 获取所有云商数据
   CloudProduceApi.getCloudProduceAll().then((res: any) => {
-    cloudProduceData.value = res.data;
+    for (const item of res.data) {
+      console.log(item);
+      cloudProduceData.value.push({
+        label: item.regionName,
+        value: item.ID,
+      });
+    }
   });
 
   switch (key) {
@@ -412,7 +456,6 @@ const enterDialog = () => {
     if (valid) {
       switch (type.value) {
         case "add": {
-          console.log(form.value);
           AssetsServerApi.createAssetsServer(form.value).then(() => {
             ElMessage({
               type: "success",
@@ -465,13 +508,35 @@ const editAssetsServer = (row: any) => {
   });
 };
 
-const deleteAssetsServer = (row: any) => {
-  AssetsServerApi.deleteAssetsServer({ id: row.ID }).then(() => {
-    ElMessage({
-      type: "success",
-      message: "删除成功",
+const pullCloudInfo = (row: any) => {
+  ElMessageBox.confirm("是否拉取云商信息", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    AssetsServerApi.pullCloudInfo({ id: row.ID }).then(() => {
+      ElMessage({
+        type: "success",
+        message: "拉取成功",
+      });
+      getTableData();
     });
-    getTableData();
+  });
+};
+
+const deleteAssetsServer = (row: any) => {
+  ElMessageBox.confirm("是否删除该服务器", "提示", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(() => {
+    AssetsServerApi.deleteAssetsServer({ id: row.ID }).then(() => {
+      ElMessage({
+        type: "success",
+        message: "删除成功",
+      });
+      getTableData();
+    });
   });
 };
 

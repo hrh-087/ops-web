@@ -57,6 +57,14 @@ class AssetsServerApi {
       method: "post",
     });
   }
+
+  static pullCloudInfo(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/assets/server/pullInstanceCloudInfo/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default AssetsServerApi;
@@ -81,5 +89,7 @@ export interface AssetsServer {
   status: number;
   UpdatedAt: string;
   uuid: string;
+  vpcId: string;
+  subVpcId: string;
   [property: string]: any;
 }
