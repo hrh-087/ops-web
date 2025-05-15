@@ -1,5 +1,8 @@
 FROM node:20.16.0-alpine
-  
+
+ENV http_proxy http://10.3.21.138:21080
+ENV https_proxy http://10.3.21.138:21080
+
 WORKDIR /ops_web
 COPY . .
 
