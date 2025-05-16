@@ -6,17 +6,17 @@
         v-model="projectValue"
         filterable
         placeholder="请选择项目"
-        style="width: 120px"
-        >
-          <el-option
-            v-for="item in project.projectinfo"
-            :key="item.ID"
-            :label="item.projectName"
-            :value="item.ID"
-          />
+        style="width: 160px"
+      >
+        <el-option
+          v-for="item in project.projectinfo"
+          :key="item.ID"
+          :label="item.projectName"
+          :value="item.ID"
+        />
       </el-select>
     </div>
-    
+
     <template v-if="!isMobile">
       <!--全屏 -->
       <div class="nav-action-item" @click="toggle">
@@ -80,7 +80,6 @@
         </template>
       </el-dropdown> -->
     </template>
-    
 
     <!-- 用户头像 -->
     <el-dropdown class="nav-action-item" trigger="click">
@@ -93,7 +92,9 @@
       </div>
       <template #dropdown>
         <el-dropdown-item>
-          <span >当前角色：{{userStore.userinfo?.authority.authorityName}}</span>
+          <span>
+            当前角色：{{ userStore.userinfo?.authority.authorityName }}
+          </span>
         </el-dropdown-item>
         <template v-if="userStore.userinfo?.authorities">
           <el-dropdown-item
@@ -103,9 +104,7 @@
             :key="item.authorityId"
             @click="changeUserAuth(item.authorityId)"
           >
-            <span>
-              切换为：{{ item.authorityName }}
-            </span>
+            <span>切换为：{{ item.authorityName }}</span>
           </el-dropdown-item>
         </template>
         <el-dropdown-menu>
@@ -133,7 +132,7 @@ import {
   useTagsViewStore,
   useUserStore,
   useSettingsStore,
-  useProjectStore
+  useProjectStore,
 } from "@/store";
 import defaultSettings from "@/settings";
 import { DeviceEnum } from "@/enums/DeviceEnum";
@@ -158,12 +157,12 @@ const { isFullscreen, toggle } = useFullscreen();
 // const activeTab = ref(MessageTypeEnum.MESSAGE);
 
 /* 切换角色 */
-const changeUserAuth = (id:any) => {
-  UserAPI.setUserAuthority({authorityId: id}).then(()=>{
+const changeUserAuth = (id: any) => {
+  UserAPI.setUserAuthority({ authorityId: id }).then(() => {
     // window.sessionStorage.setItem("needCloseAll", "true");
     // window.sessionStorage.setItem("needToHome", "true");
     window.location.reload();
-  })
+  });
 };
 
 /* 个人中心 */
@@ -191,40 +190,39 @@ function logout() {
 }
 
 const setProject = () => {
-  if (project.projectinfo && project.projectinfo.length > 0){
-    if (userStore.userinfo?.projectId === 0){
-      UserAPI.setUserProject({projectId: project.projectinfo[0].ID}).then(()=>{
-        window.location.reload();
-      })
+  if (project.projectinfo && project.projectinfo.length > 0) {
+    if (userStore.userinfo?.projectId === 0) {
+      UserAPI.setUserProject({ projectId: project.projectinfo[0].ID }).then(
+        () => {
+          window.location.reload();
+        }
+      );
       // projectValue.value = project.projectinfo[0].ID
-    }else{
-      projectValue.value = userStore.userinfo?.projectId
+    } else {
+      projectValue.value = userStore.userinfo?.projectId;
     }
-  }else{
-    ElMessage.warning("请联系管理员添加项目权限")
+  } else {
+    ElMessage.warning("请联系管理员添加项目权限");
   }
-}
-setProject()
+};
+setProject();
 
 // 监听项目id, 切换的时候设置对应用户的项目id
 watch(projectValue, (newValue, oldValue) => {
-  UserAPI.setUserProject({projectId: newValue}).then(()=>{
-    window.location.reload();
-  }).catch(
-    (err) => {
+  UserAPI.setUserProject({ projectId: newValue })
+    .then(() => {
+      window.location.reload();
+    })
+    .catch((err) => {
       ElMessageBox.alert(err.message, "提示", {
         confirmButtonText: "确定",
         type: "warning",
         lockScroll: false,
       }).then(() => {
         window.location.reload();
-      })
-    }
-  )
-})
-
-
-
+      });
+    });
+});
 </script>
 <style lang="scss" scoped>
 .nav-action-item {

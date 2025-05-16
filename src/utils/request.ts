@@ -22,7 +22,7 @@ service.interceptors.request.use(
       config.headers.Authorization = accessToken;
     }
 
-    config.headers["X-Project-Id"] = useUserStore().userinfo?.projectId
+    config.headers["X-Project-Id"] = useUserStore().userinfo?.projectId;
     return config;
   },
   (error: any) => {
@@ -34,30 +34,45 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (response) => {
     // 检查配置的响应类型是否为二进制类型（'blob' 或 'arraybuffer'）, 如果是，直接返回响应对象
+    if (
+      response.config.responseType === "blob" ||
+      response.config.responseType === "arraybuffer"
+    ) {
+      if (response.status === 200) {
+        return response;
+      }
+    }
 
     const { code, data, msg } = response.data;
-    
+
     if (code === ResultEnum.SUCCESS) {
       return response.data;
+    } else if (code === 7) {
+      ElMessage.error(msg);
+    } else {
+      ElMessage.error("请求失败");
     }
-    
-    ElMessage.error(msg || "系统出错");
+
     return Promise.reject(new Error(msg || "Error"));
   },
   (error: any) => {
     console.log("err" + error);
     // 异常处理
     if (!error.response) {
-      ElMessageBox.confirm(`
+      ElMessageBox.confirm(
+        `
         <p>检测到请求错误</p>
         <p>${error}</p>
-        `, '请求报错', {
-        dangerouslyUseHTMLString: true,
-        distinguishCancelAndClose: true,
-        confirmButtonText: '稍后重试',
-        cancelButtonText: '取消'
-      })
-      return
+        `,
+        "请求报错",
+        {
+          dangerouslyUseHTMLString: true,
+          distinguishCancelAndClose: true,
+          confirmButtonText: "稍后重试",
+          cancelButtonText: "取消",
+        }
+      );
+      return;
     }
 
     if (error.response.data) {
@@ -73,8 +88,10 @@ service.interceptors.response.use(
           .then(() => {
             location.reload();
           });
+      } else if (code === 7) {
+        ElMessage.error(msg);
       } else {
-        ElMessage.error(msg || "系统出错");
+        ElMessage.error(msg || "请求失败");
       }
     }
     return Promise.reject(error.message);

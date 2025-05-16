@@ -1,7 +1,11 @@
-FROM node:20.16
+FROM node:20.16.0-alpine
+
+ENV http_proxy http://10.3.20.151:7890
+ENV https_proxy http://10.3.20.151:7890
 
 WORKDIR /ops_web
 COPY . .
+
 
 RUN npm install -g pnpm
 RUN pnpm install && pnpm run build

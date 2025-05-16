@@ -22,7 +22,7 @@ class GameUpdateApi {
     return request<any, APIResponse<object>>({
       url: "/job/gameUpdate/",
       method: "delete",
-      params: data,
+      data,
     });
   }
 
@@ -46,6 +46,13 @@ class GameUpdateApi {
       url: "/job/gameUpdate/exec/",
       method: "post",
       data: data,
+    });
+  }
+
+  static getGameSvnConfigInfo() {
+    return request<any, APIResponse<object>>({
+      url: "/job/gameUpdate/svnInfo/",
+      method: "post",
     });
   }
 }

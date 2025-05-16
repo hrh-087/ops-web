@@ -1,5 +1,10 @@
 import request from "@/utils/request";
-import { type RequestList, ResponseList, APIResponse, APIResponseList } from "@/api/types/common";
+import {
+  type RequestList,
+  ResponseList,
+  APIResponse,
+  APIResponseList,
+} from "@/api/types/common";
 
 class MenuAPI {
   /**
@@ -11,7 +16,7 @@ class MenuAPI {
    */
   static getRoutes() {
     return request<any, APIResponse<RouteVO[]>>({
-      url: "/menu/getMenu",
+      url: "/menu/getMenu/",
       method: "post",
       // url: "/api/v1/menus/routes",
       // method: "get",
@@ -20,47 +25,46 @@ class MenuAPI {
 
   static getMenuList(data: RequestList) {
     return request<any, APIResponse<ResponseList>>({
-      url: "/menu/getMenuList ",
+      url: "/menu/getMenuList/",
       method: "post",
-      data: data
+      data: data,
     });
   }
-  
 
   // @Summary 修改menu列表
   // @Produce  application/json
   // @Param menu Object
   // @Router /menu/updateBaseMenu [post]
-  static updateBaseMenu(data:any) {
-    return request<any,APIResponse<object>>({
-      url: '/menu/updateBaseMenu',
-      method: 'post',
-      data
-    })
+  static updateBaseMenu(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/menu/updateBaseMenu/",
+      method: "post",
+      data,
+    });
   }
 
   // @Summary 新增基础menu
   // @Produce  application/json
   // @Param menu Object
   // @Router /menu/getMenuList [post]
-  static addBaseMenu(data:any) {
-    return request<any,APIResponse<object>>({
-      url: '/menu/addBaseMenu',
-      method: 'post',
-      data
-    })
+  static addBaseMenu(data: any) {
+    return request<any, APIResponse<object>>({
+      url: "/menu/addBaseMenu/",
+      method: "post",
+      data,
+    });
   }
 
   // @Summary 删除基础menu
   // @Produce  application/json
   // @Param menu Object
   // @Router /menu/getMenuList [post]
-  static deleteBaseMenu(data:any) {
-    return request<any,APIResponse<any>>({
-      url: '/menu/deleteBaseMenu',
-      method: 'post',
-      data
-    })
+  static deleteBaseMenu(data: any) {
+    return request<any, APIResponse<any>>({
+      url: "/menu/deleteBaseMenu/",
+      method: "post",
+      data,
+    });
   }
 
   // @Tags menu
@@ -73,44 +77,43 @@ class MenuAPI {
   // @Router /menu/getBaseMenuById [post]
   static getBaseMenuById(data: object) {
     return request<any, APIResponse<object>>({
-      url: '/menu/getBaseMenuById',
-      method: 'post',
-      data
-    })
+      url: "/menu/getBaseMenuById/",
+      method: "post",
+      data,
+    });
   }
 
-// @Summary 获取基础路由列表
-// @Produce  application/json
-// @Param 可以什么都不填 调一下即可
-// @Router /menu/getBaseMenuTree [post]
-static getBaseMenuTree = () => {
-  return request<APIResponseList<never[]>>({
-    url: '/menu/getBaseMenuTree',
-    method: 'post'
-  })
-}
+  // @Summary 获取基础路由列表
+  // @Produce  application/json
+  // @Param 可以什么都不填 调一下即可
+  // @Router /menu/getBaseMenuTree [post]
+  static getBaseMenuTree = () => {
+    return request<APIResponseList<never[]>>({
+      url: "/menu/getBaseMenuTree/",
+      method: "post",
+    });
+  };
 
-static getMenuAuthority = (data:object) => {
-  return request<MenuAuthority>({
-    url: '/menu/getMenuAuthority',
-    data: data,
-    method: 'post'
-  })
-}
+  static getMenuAuthority = (data: object) => {
+    return request<MenuAuthority>({
+      url: "/menu/getMenuAuthority/",
+      data: data,
+      method: "post",
+    });
+  };
 
-static addMenuAuthority(data:object) {
-  return request<any,APIResponse<object>>({
-    url: '/menu/addMenuAuthority',
-    method: 'post',
-    data
-  })
-}
-
+  static addMenuAuthority(data: object) {
+    return request<any, APIResponse<object>>({
+      url: "/menu/addMenuAuthority/",
+      method: "post",
+      data,
+    });
+  }
 }
 
 export default MenuAPI;
 
-export interface MenuAuthority{
+export interface MenuAuthority {
   menus: never[];
 }
 
@@ -143,4 +146,3 @@ export interface Meta {
   /** 路由title */
   title?: string;
 }
-

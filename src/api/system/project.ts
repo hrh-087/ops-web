@@ -1,11 +1,10 @@
-import request from '@/utils/request';
-import { APIResponse, ResponseList } from '../types/common';
-
+import request from "@/utils/request";
+import { APIResponse, ResponseList } from "../types/common";
 
 class ProjectApi {
   static getProjectList(data: any) {
     return request<any, APIResponse<ResponseList>>({
-      url: "/project/getProjectList",
+      url: "/project/getProjectList/",
       method: "post",
       data,
     });
@@ -13,7 +12,7 @@ class ProjectApi {
 
   static createProject(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/project/createProject",
+      url: "/project/createProject/",
       method: "post",
       data,
     });
@@ -21,7 +20,7 @@ class ProjectApi {
 
   static updateProject(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/project/updateProject",
+      url: "/project/updateProject/",
       method: "post",
       data,
     });
@@ -29,7 +28,7 @@ class ProjectApi {
 
   static deleteProject(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/project/deleteProject",
+      url: "/project/deleteProject/",
       method: "delete",
       data,
     });
@@ -37,40 +36,56 @@ class ProjectApi {
 
   static getProjectById(data: any) {
     return request<any, APIResponse<object>>({
-      url: "/project/getProjectById",
+      url: "/project/getProjectById/",
       method: "post",
       data: data,
     });
   }
 
-  static getBaseProjectTree(){
+  static getBaseProjectTree() {
     return request<any, APIResponse<never[]>>({
-      url: "/project/getBaseProjectTree",
+      url: "/project/getBaseProjectTree/",
       method: "get",
     });
   }
 
-  static getAntuorityProject(data:object){
+  static getAntuorityProject(data: object) {
     return request<any, APIResponse<never[]>>({
-      url: "/project/getAuthorityProject",
+      url: "/project/getAuthorityProject/",
       method: "post",
-      data: data
+      data: data,
     });
   }
 
-  static addProjectAuthority(data:object){
+  static addProjectAuthority(data: object) {
     return request<any, APIResponse<object>>({
-      url: "/project/setAuthorityProject",
+      url: "/project/setAuthorityProject/",
       method: "post",
-      data: data
+      data: data,
+    });
+  }
+
+  static setProjectAuthority(data: object) {
+    return request<any, APIResponse<object>>({
+      url: "/project/setProjectAuthority/",
+      method: "post",
+      data: data,
+    });
+  }
+
+  static initProject(data: object) {
+    return request<any, APIResponse<object>>({
+      url: "/project/initProject/",
+      method: "post",
+      data: data,
     });
   }
 }
 
 export default ProjectApi;
 
-
 export interface ProjectInfo {
   ID: number;
   projectName: string;
+  projectCode: string;
 }
